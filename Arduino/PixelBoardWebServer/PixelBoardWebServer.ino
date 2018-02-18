@@ -156,7 +156,11 @@ int keyIndex = 0;                 // your network key Index number (needed only 
 
 int status = WL_IDLE_STATUS;
 
+#include <ArduinoJson.h>
+#include "LightSet.h"
 WiFiServer server(80);
+LightSet lightSet(logMsg);
+
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -191,55 +195,45 @@ void setup() {
     status = WiFi.begin(ssid, pass);
 
     // wait 10 seconds for connection:
-    delay(10000);
+    delay(1000);
   }
+  lightSet.initialize();
+
   server.begin();
   // you're connected now, so print out the status:
   printWifiStatus();
 }
 
+const static int BUFFER_LEN = 5000;
+char _buffer[BUFFER_LEN];
 
-void loop() {
-  // listen for incoming clients
-  WiFiClient client = server.available();
-  if (client) {
-    Serial.println("new client");
-    // an http request ends with a blank line
-    boolean currentLineIsBlank = true;
-    bool firstBlank = false;
-    int count = 0;
-    while (client.connected()) {
-      if (client.available()) {
-        char c = client.read();
-        count++;
-        Serial.write(c);
-        // if you've gotten to the end of the line (received a newline
-        // character) and the line is blank, the http request has ended,
-        // so you can send a reply
-        if (c == '\n' && currentLineIsBlank) {
-          if ( !firstBlank )
-          {
-            firstBlank = true;
-            continue;
-          }
-          break;
-        }
-        if (c == '\n') {
-          // you're starting a new line
-          currentLineIsBlank = true;
-        } else if (c != '\r') {
-          // you've gotten a character on the current line
-          currentLineIsBlank = false;
-        }
-      } // end available
-      else 
+void processPayload(const char *output)
+{
+  // from https://arduinojson.org/assistant/
+  const size_t bufferSize = JSON_ARRAY_SIZE(10) + JSON_OBJECT_SIZE(1) + 10*JSON_OBJECT_SIZE(2) + 219;
+    DynamicJsonBuffer jsonBuffer(bufferSize);
+
+  output = strchr( output, '{' );
+  if ( output != NULL )
+  {
+    JsonObject& root = jsonBuffer.parseObject(output);
+    if ( root.success() )
+    {
+      JsonArray &channels = root["channels"];
+      for ( int i = 0; i < channels.size(); i++ )
       {
-        Serial.println();
-        Serial.print( "Nothing available count = ");
-        Serial.print(count);
-        break;
+        JsonObject &channel = channels[i];
+        logMsg( "Channel %d %x", channel.get<int>("circuit"), channel.get<uint32_t>("value"));
+        lightSet.SetLight(channel.get<int>("circuit"), channel.get<uint32_t>("value") );
       }
+      lightSet.ShowLights();
     }
+  }
+
+}
+
+void sendResponse( WiFiClient &client)
+{
     // send a standard http response header
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: application/json");
@@ -260,9 +254,54 @@ void loop() {
         client.println("}");
     }
     client.println("]}");
-    
+
     // give the web browser time to receive the data
     delay(1);
+}
+void loop() {
+  // listen for incoming clients
+  WiFiClient client = server.available();
+  char c;
+  if (client) {
+    char *content_length = NULL;
+    Serial.println("new client");
+    // an http request ends with a blank line
+    boolean currentLineIsBlank = true;
+    while (client.connected()) {
+      if (client.available()) {
+        c = client.read();
+        Serial.write(c);
+
+        // if you've gotten to the end of the line (received a newline
+        // character) and the line is blank, the http request has ended,
+        // so you can send a reply
+        if (c == '\n' && currentLineIsBlank) {
+            logMsg("Got first blank, reading payload!");
+            int count = 0;
+            while ( client.available() )
+            {
+              _buffer[count++] = client.read();
+            }
+            _buffer[count] = '\0';
+            Serial.print("Payload count is ");
+            Serial.println(count);
+            Serial.println(_buffer);
+            break;
+        }
+        if (c == '\n') {
+          // you're starting a new line
+          currentLineIsBlank = true;
+        } else if (c != '\r') {
+          // you've gotten a character on the current line
+          currentLineIsBlank = false;
+        }
+      } // end available
+    }
+    Serial.println("");
+
+    processPayload(_buffer);
+
+    sendResponse(client);
 
     // close the connection:
     client.stop();
