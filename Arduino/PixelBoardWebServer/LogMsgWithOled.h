@@ -18,13 +18,13 @@ public:
   const int buttonC = 5;
 
 private:
-  virtual void logMsg(char *msg );
+  virtual void logMsg(char *msg, LogLevel level );
   void logLine( const char *msg );
 
-  // 4, 21 char lines on display
-  char logArray[4][22];
+  // 4x21 char lines on display
+  const static int LINE_LEN = 21;
+  char logArray[4][LINE_LEN+1];
   int topLine = 0;
-  const int LINE_LEN = 21;
 
   void initDisplay();
   bool displayOk = false;

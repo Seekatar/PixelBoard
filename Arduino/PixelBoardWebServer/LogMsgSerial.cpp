@@ -11,11 +11,11 @@ void LogMsgSerial::LogMsg(ILogMsg::LogLevel level, const char *msg, ...)
     vsnprintf( logMsgBuffer, 300, msg, args );
     va_end(args);
 
-    logMsg(logMsgBuffer);
+    logMsg(logMsgBuffer, level);
   }
 }
 
-void LogMsgSerial::logMsg(char *msg)
+void LogMsgSerial::logMsg(char *msg, LogLevel level)
 {
   Serial.println(msg);
 }

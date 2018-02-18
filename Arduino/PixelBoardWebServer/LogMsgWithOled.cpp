@@ -46,6 +46,7 @@ void LogMsgWithOled::logLine(const char *msg)
     display.setTextSize(1);
 
     strncpy(logArray[topLine], msg, LINE_LEN);
+    logArray[topLine][LINE_LEN] = '\0';
 
     if (++topLine > 3)
       topLine = 0;
@@ -60,25 +61,40 @@ void LogMsgWithOled::logLine(const char *msg)
   }
 }
 
-void LogMsgWithOled::logMsg(char *msg)
+void LogMsgWithOled::logMsg(char *msg, LogLevel level)
 {
-  if (logLevel <= LogLevel::Verbose || msg == NULL)
+  LogMsgSerial::logMsg(msg, level);
+  
+  if (level <= LogLevel::Verbose || msg == NULL)
     return; // can't send lots of data to 3-line screen!
 
   char *s = strtok(msg, "\r\n");
   while (s != NULL)
   {
+    bool longer = false;
     char *t = s;
+    Serial.print(">>> ");
+    Serial.println(t);
     while (strlen(t) > LINE_LEN)
     {
-      char line[22];
+      char line[LINE_LEN+1];
       strncpy(line, t, LINE_LEN);
-      line[21] = '\0';
+      line[LINE_LEN] = '\0';
+      longer = true;
+      Serial.print("Pt1>>> ");
+      Serial.println(line);
       logLine(line);
       t += LINE_LEN;
     }
     if (strlen(t) > 0)
+    {
+      if ( longer )
+      {
+        Serial.print("Pt2>>> ");
+        Serial.println(t);
+      }
       logLine(t);
+    }
     s = strtok(NULL, "\r\n");
   }
 }

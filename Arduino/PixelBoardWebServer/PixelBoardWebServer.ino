@@ -30,6 +30,7 @@ int status = WL_IDLE_STATUS;
 #include "LightSet.h"
 WiFiServer server(80);
 ILogMsg &logger = ILogMsg::Instance();
+//logger.SetLogLevel(ILogMsg::LogLevel::Debug);
 LightSet lightSet(logger);
 
 
@@ -77,12 +78,16 @@ void setup() {
 
 const static int BUFFER_LEN = 5000;
 char _buffer[BUFFER_LEN];
+const static int HEADER_LEN = 200;
+char _headerLine[HEADER_LEN+1];
 
-void processPayload(const char *output)
+bool processPayload(const char *output)
 {
   // from https://arduinojson.org/assistant/
+  #define ARRAY_SIZE 30
+  // const size_t bufferSize = JSON_ARRAY_SIZE(ARRAY_SIZE) + JSON_OBJECT_SIZE(1) + ARRAY_SIZE*JSON_OBJECT_SIZE(2) + 700;
   const size_t bufferSize = JSON_ARRAY_SIZE(10) + JSON_OBJECT_SIZE(1) + 10*JSON_OBJECT_SIZE(2) + 219;
-    DynamicJsonBuffer jsonBuffer(bufferSize);
+  DynamicJsonBuffer jsonBuffer(bufferSize);
 
   output = strchr( output, '{' );
   if ( output != NULL )
@@ -98,93 +103,114 @@ void processPayload(const char *output)
         lightSet.SetLight(channel.get<int>("circuit"), channel.get<uint32_t>("value") );
       }
       lightSet.ShowLights();
+      return true;
+    }
+    else
+    {
+      Serial.println( "Error parsing JSON" );
+      Serial.println( output );
+      logger.LogMsg( ILogMsg::LogLevel::Error, "Error parsing JSON" );
+      logger.LogMsg( ILogMsg::LogLevel::Debug, output );
     }
   }
-
+  else
+  {
+    Serial.println( "Open brace missing in payload" );
+    Serial.println( output );
+    logger.LogMsg( ILogMsg::LogLevel::Error, "Open brace missing in payload" );
+    logger.LogMsg( ILogMsg::LogLevel::Debug, output );
+  }
+  return false;
 }
 
-void sendResponse( WiFiClient &client)
+void sendResponse( WiFiClient &client, bool ok )
 {
     // send a standard http response header
-    client.println("HTTP/1.1 200 OK");
+    if ( ok )
+      client.println("HTTP/1.1 200 OK");
+    else
+      client.println("HTTP/1.1 400 INVALID_REQUEST");
     client.println("Content-Type: application/json");
     client.println("Connection: close");  // the connection will be closed after completion of the response
     client.println("Refresh: 5");  // refresh the page automatically every 5 sec
     client.println();
-    client.println("{\"data\": [");
-    // output the value of each analog input pin
-    for (int analogChannel = 0; analogChannel < 6; analogChannel++) {
-      int sensorReading = analogRead(analogChannel);
-      client.print("{\"analog_");
-      client.print(analogChannel);
-      client.print(+"\": ");
-      client.print(sensorReading);
-      if ( analogChannel < 5 )
-        client.println("},");
-      else
-        client.println("}");
-    }
-    client.println("]}");
-
+    client.println("{\"status\": \"OK\"}");
     // give the web browser time to receive the data
-    delay(1);
+    // delay(1);
 }
+
 void loop() {
   // listen for incoming clients
   WiFiClient client = server.available();
   char c;
   if (client) {
     char *content_length = NULL;
-    Serial.println("new client");
+    logger.LogMsg(ILogMsg::LogLevel::Debug, "new client");
+
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
+    int headerLen = 0;
+    
     while (client.connected()) {
       if (client.available()) {
         c = client.read();
-        Serial.write(c);
+        // Serial.write(c);
 
         // if you've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
         if (c == '\n' && currentLineIsBlank) {
-            logger.LogMsg( ILogMsg::LogLevel::Info, "Got first blank, reading payload!");
+            Serial.println();
+            logger.LogMsg( ILogMsg::LogLevel::Verbose, "Got first blank, reading payload!");
             int count = 0;
             while ( client.available() )
             {
               _buffer[count++] = client.read();
             }
             _buffer[count] = '\0';
-            Serial.print("Payload count is ");
-            Serial.println(count);
-            Serial.println(_buffer);
+
+            logger.LogMsg(ILogMsg::LogLevel::Debug, "Payload count is %d", count);
+            logger.LogMsg(ILogMsg::LogLevel::Debug,_buffer);
+
             break;
         }
+        
         if (c == '\n') {
+          Serial.print("Header: ");
+          _headerLine[headerLen] = '\0';
+          Serial.println(_headerLine);
           // you're starting a new line
           currentLineIsBlank = true;
+          headerLen = 0;
+          if ( strncmp(_headerLine, "Content-Length: ", strlen("Content-Length: ")) == 0 )
+          {
+            int len = atoi(_headerLine+strlen("Content-Length: "));
+            Serial.print("Len is");
+            Serial.println(len);
+          }
         } else if (c != '\r') {
           // you've gotten a character on the current line
           currentLineIsBlank = false;
+          if ( headerLen < HEADER_LEN )
+            _headerLine[headerLen++] = c;
         }
+     
       } // end available
     }
-    Serial.println("");
-
-    processPayload(_buffer);
-
-    sendResponse(client);
+    
+    sendResponse(client, processPayload(_buffer));
 
     // close the connection:
     client.stop();
-    Serial.println("client disonnected");
+    logger.LogMsg(ILogMsg::LogLevel::Debug, "client disonnected");
   }
 }
 
 
 void printWifiStatus() {
   // print the SSID of the network you're attached to:
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
+  // Serial.print("SSID: ");
+  // Serial.println(WiFi.SSID());
 
   // print your WiFi shield's IP address:
   IPAddress ip = WiFi.localIP();

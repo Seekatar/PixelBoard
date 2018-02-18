@@ -11,8 +11,8 @@ public:
   virtual void SetLogLevel(ILogMsg::LogLevel level ) { logLevel = level; }
 
 protected:
-  virtual void logMsg(char *msg);
-  ILogMsg::LogLevel logLevel = ILogMsg::LogLevel::Info;
+  virtual void logMsg(char *msg, LogLevel level);
+  ILogMsg::LogLevel logLevel = ILogMsg::LogLevel::Debug;
   char logMsgBuffer[300];
 };
 
