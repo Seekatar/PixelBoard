@@ -150,6 +150,7 @@ void loop() {
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     int headerLen = 0;
+    int len = 0;
     
     while (client.connected()) {
       if (client.available()) {
@@ -163,9 +164,12 @@ void loop() {
             Serial.println();
             logger.LogMsg( ILogMsg::LogLevel::Verbose, "Got first blank, reading payload!");
             int count = 0;
-            while ( client.available() )
+            while ( count < len )
             {
-              _buffer[count++] = client.read();
+              while ( client.available() )
+              {
+                _buffer[count++] = client.read();
+              }
             }
             _buffer[count] = '\0';
 
@@ -184,7 +188,7 @@ void loop() {
           headerLen = 0;
           if ( strncmp(_headerLine, "Content-Length: ", strlen("Content-Length: ")) == 0 )
           {
-            int len = atoi(_headerLine+strlen("Content-Length: "));
+            len = atoi(_headerLine+strlen("Content-Length: "));
             Serial.print("Len is");
             Serial.println(len);
           }
