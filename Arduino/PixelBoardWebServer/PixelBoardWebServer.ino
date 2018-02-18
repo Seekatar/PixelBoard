@@ -1,28 +1,7 @@
-/*
-  WiFi Web Server
-
- A simple web server that shows the value of the analog input pins.
- using a WiFi shield.
-
- This example is written for a network using WPA encryption. For
- WEP or WPA, change the Wifi.begin() call accordingly.
-
- Circuit:
- * WiFi shield attached
- * Analog inputs attached to pins A0 through A5 (optional)
-
- created 13 July 2010
- by dlf (Metodo2 srl)
- modified 31 May 2012
- by Tom Igoe
-
- */
 #define USE_OLED
 
-#include <stdarg.h>
+#include "ILogMsg.h"
 
-bool displayOk = false;
-char logMsgBuffer[300];
 #ifdef ARDUINO_SAMD_FEATHER_M0
 const int STATUS_LED = 13;
 #elif defined(ESP_PLATFORM)
@@ -41,125 +20,17 @@ const int STATUS_LED = 14;
   #include <ESP8266WiFi.h>
 #endif
 
-#ifdef USE_OLED
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-
-#define OLED_RESET 4
-Adafruit_SSD1306 display(OLED_RESET);
-#if (SSD1306_LCDHEIGHT != 32)
-  #error("Height incorrect, please fix Adafruit_SSD1306.h!");
-#endif
-
-// On 32u4 or M0 Feathers, buttons A, B & C connect to 9, 6, 5 respectively
-const int buttonA = 9;
-const int buttonB = 6;
-const int buttonC = 5;
-
-void initDisplay()
-{
-  Serial.println("Starting display");
-
-  // display init
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C, true); // initialize with the I2C addr 0x3C (for the 128x32)
-  display.display();
-
-  // initialize the button pin as a input:
-  pinMode(buttonA, INPUT_PULLUP);
-  pinMode(buttonB, INPUT_PULLUP);
-  pinMode(buttonC, INPUT_PULLUP);
-
-  display.clearDisplay();
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.setTextSize(1);
-  display.println("Display ok");
-  display.display();
-
-  displayOk = true;
-}
-
-// 4, 21 char lines on display
-char logArray[4][22];
-int topLine = 0;
-const int LINE_LEN = 21;
-
-
-void logLine( const char *msg )
-{
-  //  try
-  {
-    if (displayOk)
-    {
-      display.clearDisplay();
-      display.setCursor(0, 0);
-      display.setTextColor(WHITE);
-      display.setTextSize(1);
-
-      strncpy( logArray[topLine], msg, LINE_LEN );
-
-      if ( ++topLine > 3 )
-        topLine = 0;
-
-      int j = 0;
-      for ( int i = topLine; i < 4; i++ )
-        display.println(logArray[i]);
-      for ( int i = 0; i < topLine; i++)
-        display.println(logArray[i]);
-
-      display.display();
-    }
-  }
-  //  catch ( ... )
-  //  {
-  //    Serial.println("Exception using display.  Turning it off");
-  //    displayOk = false;
-  //  }
-}
-#else
-void initDisplay() {}
-void logLine( const char *msg ) {}
-#endif
-
-void logMsg(const char *msg, ...)
-{
-  va_list args;
-  va_start( args, msg );
-  vsnprintf( logMsgBuffer, 300, msg, args );
-
-  Serial.println(logMsgBuffer);
-
-  #ifdef USE_OLED
-  char *s = strtok( logMsgBuffer, "\r\n" );
-  while ( s != NULL )
-  {
-    char *t = s;
-    while ( strlen( t ) > LINE_LEN )
-    {
-      char line[22];
-      strncpy( line, t, LINE_LEN );
-      line[21] = '\0';
-      logLine( line );
-      t += LINE_LEN;
-    }
-    if ( strlen(t) > 0 )
-      logLine(t);
-    s = strtok( NULL, "\r\n");
-  }
-  #endif
-
-  va_end(args);
-}
-
 #include "my_keys.h"
 int keyIndex = 0;                 // your network key Index number (needed only for WEP)
 
 int status = WL_IDLE_STATUS;
 
 #include <ArduinoJson.h>
+
 #include "LightSet.h"
 WiFiServer server(80);
-LightSet lightSet(logMsg);
+ILogMsg &logger = ILogMsg::Instance();
+LightSet lightSet(logger);
 
 
 void setup() {
@@ -169,7 +40,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial.println("Serial started");
-  initDisplay();
+  logger.Initialize();
 
 #ifdef ARDUINO_SAMD_FEATHER_M0
   //Configure pins for Adafruit ATWINC1500 Feather
@@ -178,19 +49,19 @@ void setup() {
 
   // check for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
-    logMsg("WiFi shield not present");
+    logger.LogMsg( ILogMsg::LogLevel::Info, "WiFi shield not present");
     // don't continue:
     while (true);
   }
 
   String fv = WiFi.firmwareVersion();
   if (fv != "1.1.0") {
-    logMsg("Please upgrade the firmware");
+    logger.LogMsg( ILogMsg::LogLevel::Info, "Please upgrade the firmware");
   }
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
-    logMsg("Attempting to connect to SSID: %s",ssid);
+    logger.LogMsg( ILogMsg::LogLevel::Info, "Attempting to connect to SSID: %s",ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
 
@@ -223,7 +94,7 @@ void processPayload(const char *output)
       for ( int i = 0; i < channels.size(); i++ )
       {
         JsonObject &channel = channels[i];
-        logMsg( "Channel %d %x", channel.get<int>("circuit"), channel.get<uint32_t>("value"));
+        logger.LogMsg( ILogMsg::LogLevel::Info,  "Channel %d %x", channel.get<int>("circuit"), channel.get<uint32_t>("value"));
         lightSet.SetLight(channel.get<int>("circuit"), channel.get<uint32_t>("value") );
       }
       lightSet.ShowLights();
@@ -276,7 +147,7 @@ void loop() {
         // character) and the line is blank, the http request has ended,
         // so you can send a reply
         if (c == '\n' && currentLineIsBlank) {
-            logMsg("Got first blank, reading payload!");
+            logger.LogMsg( ILogMsg::LogLevel::Info, "Got first blank, reading payload!");
             int count = 0;
             while ( client.available() )
             {
@@ -317,10 +188,10 @@ void printWifiStatus() {
 
   // print your WiFi shield's IP address:
   IPAddress ip = WiFi.localIP();
-  logMsg("IP: %d.%d.%d.%d", ip[0],ip[1],ip[2],ip[3]);
+  logger.LogMsg( ILogMsg::LogLevel::Info, "IP: %d.%d.%d.%d", ip[0],ip[1],ip[2],ip[3]);
 
   // print the received signal strength:
   long rssi = WiFi.RSSI();
-  logMsg("sig str: %ddBM", rssi);
+  logger.LogMsg( ILogMsg::LogLevel::Info, "sig str: %ddBM", rssi);
 }
 
