@@ -155,13 +155,8 @@ void loop() {
     while (client.connected()) {
       if (client.available()) {
         c = client.read();
-        // Serial.write(c);
 
-        // if you've gotten to the end of the line (received a newline
-        // character) and the line is blank, the http request has ended,
-        // so you can send a reply
         if (c == '\n' && currentLineIsBlank) {
-            Serial.println();
             logger.LogMsg( ILogMsg::LogLevel::Verbose, "Got first blank, reading payload!");
             int count = 0;
             while ( count < len )
@@ -180,17 +175,15 @@ void loop() {
         }
         
         if (c == '\n') {
-          Serial.print("Header: ");
           _headerLine[headerLen] = '\0';
-          Serial.println(_headerLine);
-          // you're starting a new line
+          logger.LogMsg(ILogMsg::LogLevel::Verbose, "HEADER: %s", _headerLine);
+          
           currentLineIsBlank = true;
           headerLen = 0;
           if ( strncmp(_headerLine, "Content-Length: ", strlen("Content-Length: ")) == 0 )
           {
             len = atoi(_headerLine+strlen("Content-Length: "));
-            Serial.print("Len is");
-            Serial.println(len);
+            logger.LogMsg(ILogMsg::LogLevel::Verbose, "Len is %d", len);
           }
         } else if (c != '\r') {
           // you've gotten a character on the current line

@@ -1,12 +1,22 @@
 ﻿$ErrorActionPreference  = "Stop"
 
-$pixelCount = 20
+$pixelCount = 17
 function setAll( $color )
 {
     $channels = @()
     foreach ( $i in 0..($pixelCount-1))
     {
-        $channels += @{circuit=$i;value=$color}
+        if ( $i -ge 9 )
+        {
+            $thiscolor = (($color -band 0xff00) -shl 8) `
+                        -bor ($color -band 0xff) `
+                        -bor (($color -band 0xff0000) -shr 8)
+        }
+        else
+        {
+            $thiscolor = $color
+        }
+        $channels += @{circuit=$i;value=$thiscolor}
     }
     @{
         channels = $channels
@@ -14,9 +24,14 @@ function setAll( $color )
 
 }
 
-function send( $body )
+function send
 {
-write-host (ConvertTo-Json $body)
+[CmdletBinding()]
+param(
+$body
+)
+
+    write-Verbose (ConvertTo-Json $body)
     (Measure-Command {
     Invoke-RestMethod -Body (ConvertTo-Json $body)`
                  -Uri "http://192.168.1.107/poop" `
@@ -30,6 +45,8 @@ write-host (ConvertTo-Json $body)
 send (setAll 0xff )
 Start-Sleep -Seconds 2
 send (setAll 0xff00 )
+Start-Sleep -Seconds 2
+send (setAll 0xff0000 )
 Start-Sleep -Seconds 2
 send (setAll 0 )
 Start-Sleep -Seconds 2

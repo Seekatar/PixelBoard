@@ -71,28 +71,17 @@ void LogMsgWithOled::logMsg(char *msg, LogLevel level)
   char *s = strtok(msg, "\r\n");
   while (s != NULL)
   {
-    bool longer = false;
     char *t = s;
-    Serial.print(">>> ");
-    Serial.println(t);
     while (strlen(t) > LINE_LEN)
     {
       char line[LINE_LEN+1];
       strncpy(line, t, LINE_LEN);
       line[LINE_LEN] = '\0';
-      longer = true;
-      Serial.print("Pt1>>> ");
-      Serial.println(line);
       logLine(line);
       t += LINE_LEN;
     }
     if (strlen(t) > 0)
     {
-      if ( longer )
-      {
-        Serial.print("Pt2>>> ");
-        Serial.println(t);
-      }
       logLine(t);
     }
     s = strtok(NULL, "\r\n");
