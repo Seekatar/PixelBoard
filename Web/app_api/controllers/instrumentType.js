@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const instrumentType = mongoose.model('InstrumentTypes');
 
-
 const instrumentTypeById = function (req, res) {
     if (!req.params || !req.params.id) {
         res

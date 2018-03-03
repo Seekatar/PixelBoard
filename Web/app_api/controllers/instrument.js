@@ -1,7 +1,7 @@
 const http = require('http')
 const mongoose = require('mongoose');
 const instruments = mongoose.model('Instruments');
-
+const config = require('../config')
 
 const instrumentById = function (req, res) {
     if (!req.params || !req.params.id) {

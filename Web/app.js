@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 require('./app_api/models/db');
 
+global.__base = __dirname + '\\'
+
 const apiRoutes = require('./app_api/routes/index');
 
 const app = express();

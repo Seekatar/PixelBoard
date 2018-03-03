@@ -1,0 +1,15 @@
+{
+    "server": {
+        "port": 3000
+    },
+    "pixelBoard" :{
+        "module": "httpBoard",
+        "httpBoard" : {
+            "hostname" : "192.168.1.107",
+            "port": 80
+        },
+        "i2cBoard" : {
+
+        }
+    }
+}
