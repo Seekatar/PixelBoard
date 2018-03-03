@@ -1,17 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const ctrlPixels = require('../controllers/pixels');
+const ctrlInstruments = require('../controllers/instrument');
+const ctrlInstType = require('../controllers/instrumentType');
 
-// pixel board
+// instrument board
 router
-  .route('/pixels')
-  .get(ctrlPixels.pixels)
-  .post(ctrlPixels.pixelsCreate)
+  .route('/instruments')
+  .get(ctrlInstruments.getInstruments)
+  .post(ctrlInstruments.instrumentsCreate)
   
 router
-  .route('/pixels/:id')
-  .get(ctrlPixels.pixelById)
-  .put(ctrlPixels.pixelsSet)
-  .delete(ctrlPixels.pixelsDelete)
+  .route('/instruments/:id')
+  .get(ctrlInstruments.instrumentById)
+  .patch(ctrlInstruments.instrumentsSet)
+  .delete(ctrlInstruments.instrumentsDelete)
+
+// instrumentType
+router
+  .route('/instrumentTypes')
+  .get(ctrlInstType.instrumentTypes)
+  .post(ctrlInstType.instrumentTypesCreate)
+  
+router
+  .route('/instrumentTypes/:id')
+  .get(ctrlInstType.instrumentTypeById)
+  .delete(ctrlInstType.instrumentTypesDelete)
 
 module.exports = router;

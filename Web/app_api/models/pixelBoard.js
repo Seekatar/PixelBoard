@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const instrumentType = new mongoose.Schema({
+const instrumentTypeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -11,16 +11,18 @@ const instrumentType = new mongoose.Schema({
   },
   url: {
     type: String,
-    required: true
+    required: false
   },
   max_voltage: {
     type: Number,
-    required: true,
+    required: false,
+    'default': 5,
     min: 1
   },
   instrumentCount: {
     type: Number,
-    required: true,
+    required: false,
+    'default': 1,
     min: 1
   }
 });
@@ -44,12 +46,15 @@ const instrumentSchema = new mongoose.Schema({
   instrumentType_id: String
 });
 
-const instModel = mongoose.model('Instruments', instrumentSchema);
-instModel.on('index', function(error) {
+function indexError(error) {
   if ( error )
   {
     console.log("Index error");
     console.log(error);
   }
-});
+}
 
+const instModel = mongoose.model('Instruments', instrumentSchema);
+const instTypeModel = mongoose.model('InstrumentTypes', instrumentTypeSchema);
+instModel.on('index', indexError);
+instTypeModel.on('index', indexError);

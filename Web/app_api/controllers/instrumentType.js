@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
-const instruments = mongoose.model('Instruments');
+const instrumentType = mongoose.model('InstrumentTypes');
 
 
-const pixelById = function (req, res) {
+const instrumentTypeById = function (req, res) {
     if (!req.params || !req.params.id) {
         res
         .status(404)
         .json({ message: "id not supplied" });
     }
     else {
-        instruments
+        instrumentType
             .findById(req.params.id)
             .exec((err, inst) => {
                 if (err) {
@@ -31,8 +31,8 @@ const pixelById = function (req, res) {
     }
 }
 
-const pixels = function (req, res) {
-    instruments
+const instrumentTypes = function (req, res) {
+    instrumentType
         .find()
         .exec((err, inst) => {
             console.log("Ok!");
@@ -42,12 +42,16 @@ const pixels = function (req, res) {
         });
 }
 
-const pixelsCreate = function (req, res) {
-    instruments.create({
+const instrumentTypesCreate = function (req, res) {
+    console.log("test")
+    console.log(req.body)
+    instrumentType.create({
         name: req.body.name,
-        socketOffset: req.body.socketOffset ? req.body.socketOffset : 0,
-        socket: req.body.socket
-    }, (err, pixel) => {
+        manufacturer: req.body.manufacturer,
+        url: req.body.url,
+        max_voltage: req.body.max_voltage,
+        instrumentCount: req.body.instrumentCount
+    }, (err, instrumentType) => {
         if (err) {
             res
                 .status(400)
@@ -55,27 +59,17 @@ const pixelsCreate = function (req, res) {
         } else {
             res
                 .status(201)
-                .json(pixel);
+                .json(instrumentType);
         }
     });
 }
 
-const pixelsSet = function (req, res) {
-    const id = req.params.id;
-    console.log(`>>> PixelSet ${id}`);
-
-    res
-        .status(200)
-        .json({ "id": "yahoo" })
-
-}
-
-const pixelsDelete = function (req, res) {
+const instrumentTypesDelete = function (req, res) {
     const id = req.params.id;
     if (id) {
-        instruments
+        instrumentType
             .findByIdAndRemove(id)
-            .exec((err, pixel) => {
+            .exec((err, instrumentType) => {
                 if (err) {
                     res
                         .status(404)
@@ -97,9 +91,8 @@ const pixelsDelete = function (req, res) {
 };
 
 module.exports = {
-    pixelById,
-    pixels,
-    pixelsCreate,
-    pixelsSet,
-    pixelsDelete
+    instrumentTypeById,
+    instrumentTypes,
+    instrumentTypesCreate,
+    instrumentTypesDelete
 };
