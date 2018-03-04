@@ -1,0 +1,9 @@
+<h3>Live Scene</h3>
+<div>
+  <button mat-raised-button (click)="setChecked()">Set Checked</button>
+  <button mat-raised-button (click)="selectAll()">Select All</button>
+  <button mat-raised-button (click)="clearAll()">Clear All</button>
+  <button mat-raised-button (click)="invertAll()">Invert Selection</button>
+  <button mat-raised-button (click)="saveScene()">Save</button>
+</div>
+<app-instrument-list [instruments]="instruments"></app-instrument-list>

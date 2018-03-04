@@ -16,4 +16,12 @@ export class Instrument {
   socket: number;
   instrumentType_id: string;
   color: string;
+  checked: boolean;
+}
+
+export class Scene {
+  _id: string;
+  name: string;
+  description: string;
+  instruments: [Instrument]
 }

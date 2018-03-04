@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { PixelBoardService } from '../pixel-board.service';
+import { Component, OnInit, Input } from '@angular/core';
 import { Instrument } from '../model/models';
 
 @Component({
@@ -10,16 +9,10 @@ import { Instrument } from '../model/models';
 
 export class InstrumentListComponent implements OnInit {
 
+  @Input()
   instruments: Instrument[];
-  constructor(private _service : PixelBoardService ) { }
+  constructor() { }
 
   ngOnInit() {
-    this.getInstruments();
   }
-
- private getInstruments () {
-   this._service
-      .getInstruments()
-      .then( inst => this.instruments = inst );
- }
 }
