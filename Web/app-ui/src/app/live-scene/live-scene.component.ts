@@ -12,6 +12,8 @@ export class LiveSceneComponent implements OnInit {
   instruments: Instrument[];
   constructor(private _service: PixelBoardService) { }
 
+  selectedColor: string;
+
   ngOnInit() {
     this.getInstruments();
   }
@@ -23,9 +25,13 @@ export class LiveSceneComponent implements OnInit {
   }
 
   setChecked() {
-
+    this.instruments
+      .filter( inst => inst.checked)
+      .forEach(inst => {
+        inst.color = this.selectedColor;
+    });
   }
-  
+
   selectAll() {
     this.instruments.forEach(inst => {
       inst.checked = true;
