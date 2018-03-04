@@ -1,0 +1,15 @@
+.instrument {
+  float: left;
+}
+
+.instrumentLayout {
+  padding-bottom: 10px;
+}
+
+.colorPicker {
+ padding: 0
+}
+
+.vertical-text {
+	transform: rotate(90deg) translate(100%);
+}
