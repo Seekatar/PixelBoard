@@ -11,5 +11,19 @@
 }
 
 .vertical-text {
-	transform: rotate(90deg) translate(100%);
+  transform: rotate(90deg) translate(100%);
+}
+
+.vert-container {
+  padding-bottom: 10em;  /* to get it to padd down */
+}
+
+.color-square {
+  width: 3em;
+  height: 8em;
+  background: aliceblue;
+  border: 2px solid darkgray;
+  border-radius: 2px;
+  align-content: center;
+  align-self: center;
 }

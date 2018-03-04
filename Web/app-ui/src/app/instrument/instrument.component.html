@@ -4,11 +4,13 @@
     <mat-checkbox></mat-checkbox>
   </div>
   <div class="instrumentLayout">
-    <input class="colorPicker" type="color" [(ngModel)]="color" />
+    <div class="color-square"></div>
   </div>
   <div class="instrumentLayout">
     <button mat-fab (click)="bump()">Bump</button>
   </div>
+  <div class="vert-container">
   <div class="instrumentLayout vertical-text">{{instrument.name}}</div>
+</div>
 </div>
 </div>
