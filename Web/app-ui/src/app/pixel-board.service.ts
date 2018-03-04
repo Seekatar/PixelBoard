@@ -6,6 +6,14 @@ import { Instrument, InstrumentType } from "./model/models"
 @Injectable()
 export class PixelBoardService {
 
+  setScene(instruments: Instrument[] ) {
+    let i = 0;
+    instruments.forEach( inst => {
+      this.setInstrument( inst, inst.color);
+      i++;
+    });
+  }
+
   handleError(error: any): Promise<any> {
     console.error('Error from http call', error)
     return Promise.reject(error.message || error);

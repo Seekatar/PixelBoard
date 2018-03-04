@@ -4,7 +4,7 @@
     <mat-checkbox [checked]="instrument.checked" (change)="instrument.checked = !instrument.checked"></mat-checkbox>
   </div>
   <div class="instrumentLayout">
-    <div class="color-square"></div>
+    <div class="color-square" [style.background-color]="instrument.color"></div>
   </div>
   <div class="instrumentLayout">
     <button mat-fab (click)="bump()">Bump</button>

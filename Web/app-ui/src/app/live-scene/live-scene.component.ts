@@ -12,7 +12,7 @@ export class LiveSceneComponent implements OnInit {
   instruments: Instrument[];
   constructor(private _service: PixelBoardService) { }
 
-  selectedColor: string;
+  selectedColor: string = "#ffffff";
 
   ngOnInit() {
     this.getInstruments();
@@ -21,15 +21,19 @@ export class LiveSceneComponent implements OnInit {
   private getInstruments() {
     this._service
       .getInstruments()
-      .then(inst => this.instruments = inst);
+      .then(inst => {
+        this.instruments = inst;
+        this.instruments.forEach(inst => { inst.color = "#000000" })
+      });
+    ;
   }
 
   setChecked() {
     this.instruments
-      .filter( inst => inst.checked)
+      .filter(inst => inst.checked)
       .forEach(inst => {
         inst.color = this.selectedColor;
-    });
+      });
   }
 
   selectAll() {
@@ -48,5 +52,9 @@ export class LiveSceneComponent implements OnInit {
     this.instruments.forEach(inst => {
       inst.checked = !inst.checked;
     });
+  }
+
+  setScene() {
+    this._service.setScene( this.instruments.filter( inst => inst.checked) );
   }
 }
