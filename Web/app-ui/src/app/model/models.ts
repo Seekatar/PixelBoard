@@ -24,5 +24,5 @@ export class Scene {
   _id: string;
   name: string;
   description: string;
-  instruments: [Instrument]
+  instruments: Instrument []
 }

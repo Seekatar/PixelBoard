@@ -41,20 +41,48 @@ const instrumentSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0,
-    max: 1000
+    max: 1000,
   },
-  instrumentType_id: String
+  instrumentType_id: String,
+  colorScheme: {
+    type: String,
+    'default': 'RGB'
+  }
+});
+
+const sceneSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    index: { unique: true }
+  },
+  transition: {
+    name: String
+  },
+  instrument: [
+    {
+      instrument_id: {
+        type: String,
+        required: true
+      },
+      color: {
+        type: String,
+        required: true
+      }
+    }
+  ]
 });
 
 function indexError(error) {
-  if ( error )
-  {
-    console.log("Index error");
-    console.log(error);
+    if (error) {
+      console.log("Index error");
+      console.log(error);
+    }
   }
-}
 
 const instModel = mongoose.model('Instruments', instrumentSchema);
 const instTypeModel = mongoose.model('InstrumentTypes', instrumentTypeSchema);
+const sceneModel = mongoose.model('SceneTypes', sceneSchema);
+
 instModel.on('index', indexError);
 instTypeModel.on('index', indexError);
