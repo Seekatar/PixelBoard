@@ -17,6 +17,7 @@ export class Instrument {
   instrumentType_id: string;
   color: string;
   checked: boolean;
+  colorScheme: string;
 }
 
 export class Scene {

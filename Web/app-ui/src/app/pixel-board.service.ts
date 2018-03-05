@@ -6,21 +6,40 @@ import { Instrument, InstrumentType } from "./model/models"
 @Injectable()
 export class PixelBoardService {
 
-  setScene(instruments: Instrument[] ) {
-    let i = 0;
+  private _baseUri = "http://localhost:3000/api";
+
+  constructor(private http: Http) { }
+
+  public setScene(instruments: Instrument[] ) {
+
+    const url = `${this._baseUri}/scenes/0`
+    let sockets = [];
     instruments.forEach( inst => {
-      this.setInstrument( inst, inst.color);
-      i++;
+      let colorNum = parseInt(`0x${inst.color.substr(1)}`)
+      if ( inst.colorScheme === "GRB")
+        colorNum = (colorNum & 0xff0000) >> 8 | (colorNum & 0xff00) << 8 | (colorNum & 0xff);
+
+      sockets.push({
+        "socket": inst.socket,
+        "color": colorNum
+      })
     });
+    const body = {
+      transition: "1sec",
+      sockets: sockets
+    };
+
+    return this.http
+      .put(url, body)
+      .toPromise()
+      .then(res => res.json() as Instrument[])
+      .catch(this.handleError);
   }
 
   handleError(error: any): Promise<any> {
     console.error('Error from http call', error)
     return Promise.reject(error.message || error);
   }
-  private _baseUri = "http://localhost:3000/api";
-
-  constructor(private http: Http) { }
 
   public getInstruments(): Promise<Instrument[]> {
     const url = `${this._baseUri}/instruments`

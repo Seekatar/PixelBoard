@@ -1,5 +1,5 @@
 <div class="instrument">
-  <div class="instrumentLayout">
+  <div class="instrumentLayout">{{instrument.socket}}</div>
   <div class="instrumentLayout">
     <mat-checkbox [checked]="instrument.checked" (change)="instrument.checked = !instrument.checked"></mat-checkbox>
   </div>
@@ -11,6 +11,5 @@
   </div>
   <div class="vert-container">
   <div class="instrumentLayout vertical-text">{{instrument.name}}</div>
-</div>
 </div>
 </div>

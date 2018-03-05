@@ -7,3 +7,7 @@ purple-green.css
 */
 
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+
+.colorDiv {
+  margin-top: 1em;
+}
