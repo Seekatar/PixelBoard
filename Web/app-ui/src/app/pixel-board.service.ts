@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise'
-import { Instrument, InstrumentType } from "./model/models"
+import { Instrument, InstrumentType, Scene } from "./model/models"
 
 @Injectable()
 export class PixelBoardService {
@@ -10,13 +10,24 @@ export class PixelBoardService {
 
   constructor(private http: Http) { }
 
-  public setScene(instruments: Instrument[] ) {
+  public getScene(name: string) {
+    const url = `${this._baseUri}/scenes/0`
+
+    return this.http
+      .get(url)
+      .toPromise()
+      .then(res => res.json() as Scene)
+      .catch(this.handleError);
+
+  }
+
+  public setScene(instruments: Instrument[]) {
 
     const url = `${this._baseUri}/scenes/0`
     let sockets = [];
-    instruments.forEach( inst => {
+    instruments.forEach(inst => {
       let colorNum = parseInt(`0x${inst.color.substr(1)}`)
-      if ( inst.colorScheme === "GRB")
+      if (inst.colorScheme === "GRB")
         colorNum = (colorNum & 0xff0000) >> 8 | (colorNum & 0xff00) << 8 | (colorNum & 0xff);
 
       sockets.push({
@@ -50,11 +61,11 @@ export class PixelBoardService {
       .catch(this.handleError);
   }
 
-  public setInstrument( instrument: Instrument, color: string ) {
+  public setInstrument(instrument: Instrument, color: string) {
     const url = `${this._baseUri}/instruments/${instrument.socket}`
     const colorNum = parseInt(`0x${color.substr(1)}`)
 
-    const body = {color: colorNum}
+    const body = { color: colorNum }
 
     return this.http
       .patch(url, body)
