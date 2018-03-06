@@ -78,14 +78,22 @@ $body
 )
 
     write-Verbose (ConvertTo-Json $body)
-    (Measure-Command {
-    Invoke-RestMethod -Body (ConvertTo-Json $body -Compress)`
-                 -Uri "http://192.168.1.107" `
+    try 
+    {
+        $resp = Invoke-WebRequest -Body (ConvertTo-Json $body -Compress)`
+                 -Uri "http://192.168.1.107/api/pixel" `
                  -UseBasicParsing `
                  -Method Post `
                  -ContentType "application/json" 
-                 }).TotalSeconds
-
+        if ( $resp.StatusCode -eq 200 )
+        {
+            ConvertFrom-Json $resp.Content
+        }
+    }
+    catch 
+    {
+        Write-Error $_
+    }
 }
 
 function setCoyote($color)

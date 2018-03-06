@@ -10,6 +10,8 @@ const int STATUS_LED = 5;
 const int STATUS_LED = 14;
 #endif
 
+#include <ArduinoHttpServer.h>
+
 #ifdef ARDUINO_SAMD_FEATHER_M0
   #define CONF_WINC_DEBUG 1
   #include <SPI.h>
@@ -28,11 +30,13 @@ int status = WL_IDLE_STATUS;
 #include <ArduinoJson.h>
 
 #include "LightSet.h"
+
 WiFiServer server(80);
 ILogMsg &logger = ILogMsg::Instance();
 //logger.SetLogLevel(ILogMsg::LogLevel::Debug);
 LightSet lightSet(logger);
 
+#define getErrorDescription getErrorDescrition
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -122,77 +126,65 @@ bool processPayload(const char *output)
 
 void sendResponse( WiFiClient &client, bool ok )
 {
-    // send a standard http response header
+  Serial.print("sending response since ok is ");
+  Serial.println(ok);
     if ( ok )
-      client.println("HTTP/1.1 200 OK");
+    {
+      ArduinoHttpServer::StreamHttpReply httpReply(client, "application/json");
+      httpReply.send("{\"status\": \"OK\" }");
+    }
     else
-      client.println("HTTP/1.1 400 INVALID_REQUEST");
-    client.println("Content-Type: application/json");
-    client.println("Connection: close");  // the connection will be closed after completion of the response
-    client.println("Refresh: 5");  // refresh the page automatically every 5 sec
-    client.println();
-    client.println("{\"status\": \"OK\"}");
-    // give the web browser time to receive the data
-    // delay(1);
+    {
+      ArduinoHttpServer::StreamHttpErrorReply httpReply(client, "application/json");
+      httpReply.send("{\"status\": \"ERROR\" }");
+    }
 }
 
 void loop() {
   // listen for incoming clients
   WiFiClient client = server.available();
   char c;
-  if (client) {
-    char *content_length = NULL;
+  if (client.connected()) {
     logger.LogMsg(ILogMsg::LogLevel::Debug, "new client");
-
-    // an http request ends with a blank line
-    boolean currentLineIsBlank = true;
-    int headerLen = 0;
-    int len = 0;
     
-    while (client.connected()) {
-      if (client.available()) {
-        c = client.read();
+    // Connected to client. Allocate and initialize StreamHttpRequest object.
+    ArduinoHttpServer::StreamHttpRequest<1023> httpRequest(client);
 
-        if (c == '\n' && currentLineIsBlank) {
-            logger.LogMsg( ILogMsg::LogLevel::Verbose, "Got first blank, reading payload!");
-            int count = 0;
-            while ( count < len )
-            {
-              while ( client.available() )
-              {
-                _buffer[count++] = client.read();
-              }
-            }
-            _buffer[count] = '\0';
+    // Parse the request.
+    if (httpRequest.readRequest())
+    {
+        // GET api/pixel
+        // POST api/pixel
+        if (  httpRequest.getResource()[0] == "api" && httpRequest.getResource()[1] == "pixel" )
+        {
+          Serial.println( httpRequest.getResource()[2] );
 
-            logger.LogMsg(ILogMsg::LogLevel::Debug, "Payload count is %d", count);
-            logger.LogMsg(ILogMsg::LogLevel::Debug,_buffer);
+          ArduinoHttpServer::MethodEnum method( ArduinoHttpServer::MethodInvalid );
+          method = httpRequest.getMethod();
 
-            break;
-        }
-        
-        if (c == '\n') {
-          _headerLine[headerLen] = '\0';
-          logger.LogMsg(ILogMsg::LogLevel::Verbose, "HEADER: %s", _headerLine);
-          
-          currentLineIsBlank = true;
-          headerLen = 0;
-          if ( strncmp(_headerLine, "Content-Length: ", strlen("Content-Length: ")) == 0 )
+          if( method == ArduinoHttpServer::MethodGet )
           {
-            len = atoi(_headerLine+strlen("Content-Length: "));
-            logger.LogMsg(ILogMsg::LogLevel::Verbose, "Len is %d", len);
+            
           }
-        } else if (c != '\r') {
-          // you've gotten a character on the current line
-          currentLineIsBlank = false;
-          if ( headerLen < HEADER_LEN )
-            _headerLine[headerLen++] = c;
+          else if( method == ArduinoHttpServer::MethodPost )
+          {
+            bool ret = processPayload( httpRequest.getBody() );
+            sendResponse( client, ret );
+          }
         }
-     
-      } // end available
+        else
+        {
+          ArduinoHttpServer::StreamHttpErrorReply httpReply(client, httpRequest.getContentType(), "404");
+          httpReply.send("{\"status\":\"ERROR\" }");
+        }
     }
-    
-    sendResponse(client, processPayload(_buffer));
+    else
+    {
+        // HTTP parsing failed. Client did not provide correct HTTP data or
+        // client requested an unsupported feature.
+        ArduinoHttpServer::StreamHttpErrorReply httpReply(client, httpRequest.getContentType());
+        httpReply.send(httpRequest.getErrorDescription());
+    }
 
     // close the connection:
     client.stop();
