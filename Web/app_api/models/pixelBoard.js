@@ -59,7 +59,7 @@ const sceneSchema = new mongoose.Schema({
   transition: {
     name: String
   },
-  instrument: [
+  instruments: [
     {
       instrument_id: {
         type: String,
