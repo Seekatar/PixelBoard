@@ -1,6 +1,6 @@
 #include "LightSet.h"
 
-bool LightSet::initialize()
+bool LightSet::Initialize()
 {
   _strip->begin();
   _strip->show();

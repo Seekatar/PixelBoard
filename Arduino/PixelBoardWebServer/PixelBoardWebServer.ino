@@ -34,7 +34,10 @@ int status = WL_IDLE_STATUS;
 WiFiServer server(80);
 ILogMsg &logger = ILogMsg::Instance();
 //logger.SetLogLevel(ILogMsg::LogLevel::Debug);
-LightSet lightSet(logger);
+ILightSet *lightSet = new LightSet(logger);
+
+#include "Model.h"
+Scene scene(30);
 
 #define getErrorDescription getErrorDescrition
 
@@ -56,11 +59,6 @@ void setup() {
     while (true);
   }
 
-  String fv = WiFi.firmwareVersion();
-  if (fv != "1.1.0") {
-    logger.LogMsg( ILogMsg::LogLevel::Info, "Please upgrade the firmware");
-  }
-
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
     logger.LogMsg( ILogMsg::LogLevel::Info, "Attempting to connect to SSID: %s",ssid);
@@ -70,7 +68,7 @@ void setup() {
     // wait 10 seconds for connection:
     delay(1000);
   }
-  lightSet.initialize();
+  lightSet->Initialize();
 
   server.begin();
   // you're connected now, so print out the status:
@@ -100,10 +98,14 @@ bool processPayload(const char *output)
       for ( int i = 0; i < channels.size(); i++ )
       {
         JsonObject &channel = channels[i];
-        logger.LogMsg( ILogMsg::LogLevel::Info,  "Channel %d %x", channel.get<int>("circuit"), channel.get<uint32_t>("value"));
-        lightSet.SetLight(channel.get<int>("circuit"), channel.get<uint32_t>("value") );
+        int id = channel.get<int>("circuit");
+        if ( id < scene.Count() )
+          scene[id]->Color = channel.get<uint32_t>("value");
+        logger.LogMsg( ILogMsg::LogLevel::Info,  "Channel %d %x", scene[id]->Id, scene[id]->Color);
       }
-      lightSet.ShowLights();
+      for ( int i = 0; i < scene.Count(); i++ )
+        lightSet->SetLight( scene[i]->Id, scene[i]->Color );
+      lightSet->ShowLights();
       return true;
     }
     else
@@ -164,7 +166,20 @@ void loop() {
 
           if( method == ArduinoHttpServer::MethodGet )
           {
-            
+            ArduinoHttpServer::StreamHttpReply httpReply(client, "application/json");
+            StaticJsonBuffer<1000> jsonBuffer;
+            JsonObject &root = jsonBuffer.createObject();
+            root["status"] = "OK";
+            JsonArray &lights = root.createNestedArray("channels");
+            for ( int i = 0; i < scene.Count(); i++ )
+            {
+              JsonObject &light = lights.createNestedObject();
+              light["channel"] = scene[i]->Id;
+              light["value"] = scene[i]->Color;
+            }
+            String s;
+            root.printTo(s);
+            httpReply.send(s);
           }
           else if( method == ArduinoHttpServer::MethodPost )
           {
