@@ -12,6 +12,8 @@ import { InstrumentComponent } from './instrument/instrument.component';
 import { LiveSceneComponent } from './live-scene/live-scene.component';
 import { MatColorPickerModule } from 'mat-color-picker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { InstrumentConfigComponent } from './instrument-config/instrument-config.component';
+import { SceneConfigComponent } from './scene-config/scene-config.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     TabsComponent,
     InstrumentListComponent,
     InstrumentComponent,
-    LiveSceneComponent
+    LiveSceneComponent,
+    InstrumentConfigComponent,
+    SceneConfigComponent
   ],
   imports: [
     BrowserModule,

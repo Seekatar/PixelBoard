@@ -6,7 +6,7 @@ import { Instrument, InstrumentType, Scene } from "./model/models"
 @Injectable()
 export class PixelBoardService {
 
-  private _baseUri = "http://localhost:3000/api";
+  private _baseUri = "http://192.168.1.110:3000/api";
 
   constructor(private http: Http) { }
 
@@ -52,8 +52,11 @@ export class PixelBoardService {
     return Promise.reject(error.message || error);
   }
 
-  public getInstruments(): Promise<Instrument[]> {
-    const url = `${this._baseUri}/instruments`
+  public getInstruments(full: true): Promise<Instrument[]> {
+    let url = `${this._baseUri}/instruments`
+    if ( full )
+      url += "?full=1"
+
     return this.http
       .get(url)
       .toPromise()

@@ -1,0 +1,27 @@
+<div>
+<mat-table #table [dataSource]="instruments">
+
+  <!-- Coloumns -->
+  <ng-container matColumnDef="socket">
+    <mat-header-cell *matHeaderCellDef> Socket </mat-header-cell>
+    <mat-cell *matCellDef="let instrument"> {{instrument.socket}} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+    <mat-cell *matCellDef="let instrument"> {{instrument.name}} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="type">
+    <mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
+    <mat-cell *matCellDef="let instrument"> {{instrument.type_name}} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="count">
+    <mat-header-cell *matHeaderCellDef> LEDs </mat-header-cell>
+    <mat-cell *matCellDef="let instrument"> {{instrument.instrumentCount}} </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+</mat-table>
+</div>

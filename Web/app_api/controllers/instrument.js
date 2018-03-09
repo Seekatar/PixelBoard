@@ -33,14 +33,38 @@ const instrumentById = function (req, res) {
 }
 
 const getInstruments = function (req, res) {
-    instruments
-        .find()
-        .exec((err, inst) => {
-            console.log("Ok!");
-            res
-                .status(200)
-                .json(inst)
-        });
+    if ( req.query.full) {
+        instruments
+            .aggregate([   {
+                $lookup: {
+                   from: "instrumenttypes",
+                   localField: "instrumentTypeId",    // field in the orders collection
+                   foreignField: "_id",  // field in the items collection
+                   as: "instruments"
+                }
+             }
+            ,
+             {
+                $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$instruments", 0 ] }, "$$ROOT" ] } }
+             },
+             { $project: { instruments: 0 } }
+          ])
+            .exec((err, inst) => {
+                console.log("Ok!");
+                res
+                    .status(200)
+                    .json(inst)
+            });
+    } else {
+        instruments
+            .find()
+            .exec((err, inst) => {
+                console.log("Ok!");
+                res
+                    .status(200)
+                    .json(inst)
+            });
+    }
 }
 
 const instrumentsCreate = function (req, res) {
