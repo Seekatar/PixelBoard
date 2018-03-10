@@ -14,6 +14,8 @@ import { MatColorPickerModule } from 'mat-color-picker';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InstrumentConfigComponent } from './instrument-config/instrument-config.component';
 import { SceneConfigComponent } from './scene-config/scene-config.component';
+import { EditInstrumentComponent } from './edit-instrument/edit-instrument.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { SceneConfigComponent } from './scene-config/scene-config.component';
     InstrumentComponent,
     LiveSceneComponent,
     InstrumentConfigComponent,
-    SceneConfigComponent
+    SceneConfigComponent,
+    EditInstrumentComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -34,6 +38,7 @@ import { SceneConfigComponent } from './scene-config/scene-config.component';
     BrowserAnimationsModule
   ],
   providers: [PixelBoardService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [ EditInstrumentComponent, ConfirmDialogComponent ]
 })
 export class AppModule { }

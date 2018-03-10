@@ -1,0 +1,21 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <input matInput placeholder="Socket" [(ngModel)]="data.instrument.socket">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Name" [(ngModel)]="data.instrument.name">
+  </mat-form-field>
+  <mat-form-field>
+      <mat-select placeholder="Select" [(ngModel)]="data.instrument.instrumentType">
+          <mat-option value="option1">8mm Diffuse</mat-option>
+          <mat-option value="option2">8LED Stick</mat-option>
+          <mat-option value="option3">12LED Ring</mat-option>
+          <mat-option value="option4">24LED Ring</mat-option>
+        </mat-select>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onClickClose()">Close</button>
+  <button mat-button [mat-dialog-close]="data.instrument" cdkFocusInitial>Save</button>
+</div>
