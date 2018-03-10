@@ -35,20 +35,22 @@ const instrumentById = function (req, res) {
 const getInstruments = function (req, res) {
     if ( req.query.full) {
         instruments
-            .aggregate([   {
-                $lookup: {
-                   from: "instrumenttypes",
-                   localField: "instrumentTypeId",    // field in the orders collection
-                   foreignField: "_id",  // field in the items collection
-                   as: "instruments"
-                }
-             }
-            ,
-             {
-                $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$instruments", 0 ] }, "$$ROOT" ] } }
-             },
-             { $project: { instruments: 0 } }
-          ])
+            .find()
+            .populate('instrumentTypeId')
+        //     .aggregate([   {
+        //         $lookup: {
+        //            from: "instrumenttypes",
+        //            localField: "instrumentTypeId",    // field in the orders collection
+        //            foreignField: "_id",  // field in the items collection
+        //            as: "instruments"
+        //         }
+        //      }
+        //     ,
+        //      {
+        //         $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$instruments", 0 ] }, "$$ROOT" ] } }
+        //      },
+        //      { $project: { instruments: 0 } }
+        //   ])
             .exec((err, inst) => {
                 console.log("Ok!");
                 res

@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 const instrumentTypeSchema = new mongoose.Schema({
-  name: {
+  type_name: {
+    type: String,
+    required: true
+  },
+  type_short_name: {
     type: String,
     required: true
   },
@@ -44,7 +48,7 @@ const instrumentSchema = new mongoose.Schema({
     min: 0,
     max: 1000,
   },
-  instrumentType_id: {
+  instrumentTypeId: {
     type: Schema.Types.ObjectId,
     ref: 'InstrumentTypes'
   } 
@@ -70,7 +74,7 @@ const sceneSchema = new mongoose.Schema({
   },
   instruments: [
     {
-      instrument_id: {
+      instruments: {
         type: Schema.Types.ObjectId,
         ref: 'Instruments',
         required: true
@@ -96,7 +100,7 @@ function indexError(error) {
 
 const instModel = mongoose.model('Instruments', instrumentSchema);
 const instTypeModel = mongoose.model('InstrumentTypes', instrumentTypeSchema);
-const sceneModel = mongoose.model('SceneTypes', sceneSchema);
+const sceneModel = mongoose.model('Scenes', sceneSchema);
 
 instModel.on('index', indexError);
 instTypeModel.on('index', indexError);
