@@ -1,3 +1,4 @@
+'use strict'
 const http = require('http')
 const mongoose = require('mongoose');
 const scenes = mongoose.model('Scenes');
@@ -20,12 +21,12 @@ const getLiveScene = function (resRet) {
             const obj = JSON.parse(chunk)
             let scenes = []
             if (obj.status === "OK") {
-                obj.channels.forEach(inst => { 
-                    scenes.push({ instrument_id: inst.channel, color: inst.value }) 
+                obj.channels.forEach(inst => {
+                    scenes.push({ instrument_id: inst.channel, color: inst.value })
                 });
 
             }
-            let result = { name: "LiveScene", transition: "None", scenes:scenes }
+            let result = { name: "LiveScene", transition: "None", scenes: scenes }
             resRet
                 .status(200)
                 .json(result)
@@ -83,7 +84,6 @@ const getScene = function (req, res) {
 }
 
 const getScenes = function (req, res) {
-    console.log( "debug msg getting >>>>>>>");
     scenes
         .find()
         .exec((err, scene) => {
@@ -94,18 +94,29 @@ const getScenes = function (req, res) {
         });
 }
 
-const addScene = function (req, res) {
-    console.log( "debug msg>>>>>>>");
-    sortOrder = Number(scenes.aggregate( {$group: { _id:null, max:{ $max: "$sortOrder"} }} ))
-    if ( sortOrder ) {
-        sortOrder += 1
-        console.log( "sortOrder got from db", sortOrder);
-    } else {
-        sortOrder = 1
-        console.log( "sortOrder is empty", sortOrder);
+const getMaxSortOrder = async function () {
+    return await scenes
+        .aggregate()
+        .group({ _id: null, max: { $max: "$sortOrder" } })
+        .exec();
+}
+
+const addScene = async function (req, res) {
+
+    try {
+        var sortOrder = await getMaxSortOrder()
+        _addScene(req, res, sortOrder[0].max+1)
+    } catch (err) { // need to get await error
+        console.error(`ERROR in addScene: ${JSON.stringify(err)}`);
+        res
+            .status(400)
+            .json(err)
     }
-    console.log( "sortOrder is", sortOrder);
-    instruments = req.body.instruments.forEach( o => {instrument:o._id;color:o.color;colorScheme:o.colorScheme})
+}
+
+const _addScene = function (req, res, sortOrder) {
+    let instruments = []
+    req.body.instruments.forEach(o => instruments.push({ instrument: o._id, color: o.color, colorScheme: o.colorScheme ? o.colorScheme : "RGB" }))
     scenes.create({
         name: req.body.name,
         sortOrder: sortOrder,
@@ -113,7 +124,7 @@ const addScene = function (req, res) {
         instruments: instruments
     }, (err, instrument) => {
         if (err) {
-            console.log( "Error", err)
+            console.log("Error", err)
             res
                 .status(400)
                 .json(err);

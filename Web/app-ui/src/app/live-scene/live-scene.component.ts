@@ -100,7 +100,9 @@ export class LiveSceneComponent implements OnInit {
       if (result) {
         this._service.saveScene(result)
           .then(ok => {
-            this.snackBar.open(`Scene ${result.name} Saved`);
+            this.snackBar.open(`Scene '${result.name}' saved`, null, {
+              duration: 3000
+            });
           })
           .catch(err => {
             console.log("saveResult is ", err);
