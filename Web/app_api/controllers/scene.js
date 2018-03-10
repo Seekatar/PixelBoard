@@ -1,6 +1,6 @@
 const http = require('http')
 const mongoose = require('mongoose');
-const instruments = mongoose.model('Instruments');
+const scenes = mongoose.model('Scenes');
 const config = require('../config')
 
 const getLiveScene = function (resRet) {
@@ -18,14 +18,14 @@ const getLiveScene = function (resRet) {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
             const obj = JSON.parse(chunk)
-            let instruments = []
+            let scenes = []
             if (obj.status === "OK") {
                 obj.channels.forEach(inst => { 
-                    instruments.push({ instrument_id: inst.channel, color: inst.value }) 
+                    scenes.push({ instrument_id: inst.channel, color: inst.value }) 
                 });
 
             }
-            let result = { name: "LiveScene", transition: "None", instruments:instruments }
+            let result = { name: "LiveScene", transition: "None", scenes:scenes }
             resRet
                 .status(200)
                 .json(result)
@@ -59,7 +59,7 @@ const getScene = function (req, res) {
             getLiveScene(res);
         }
         else {
-            instruments
+            scenes
                 .findById(id)
                 .exec((err, inst) => {
                     if (err) {
@@ -83,23 +83,37 @@ const getScene = function (req, res) {
 }
 
 const getScenes = function (req, res) {
-    instruments
+    console.log( "debug msg getting >>>>>>>");
+    scenes
         .find()
-        .exec((err, inst) => {
+        .exec((err, scene) => {
             console.log("Ok!");
             res
                 .status(200)
-                .json(inst)
+                .json(scene)
         });
 }
 
 const addScene = function (req, res) {
-    instruments.create({
+    console.log( "debug msg>>>>>>>");
+    sortOrder = Number(scenes.aggregate( {$group: { _id:null, max:{ $max: "$sortOrder"} }} ))
+    if ( sortOrder ) {
+        sortOrder += 1
+        console.log( "sortOrder got from db", sortOrder);
+    } else {
+        sortOrder = 1
+        console.log( "sortOrder is empty", sortOrder);
+    }
+    console.log( "sortOrder is", sortOrder);
+    instruments = req.body.instruments.forEach( o => {instrument:o._id;color:o.color;colorScheme:o.colorScheme})
+    scenes.create({
         name: req.body.name,
-        socketOffset: req.body.socketOffset ? req.body.socketOffset : 0,
-        socket: req.body.socket
+        sortOrder: sortOrder,
+        transition: req.body.transition,
+        instruments: instruments
     }, (err, instrument) => {
         if (err) {
+            console.log( "Error", err)
             res
                 .status(400)
                 .json(err);
@@ -179,7 +193,7 @@ const setScene = function (req, res) {
 const deleteScene = function (req, res) {
     const id = req.params.id;
     if (id) {
-        instruments
+        scenes
             .findByIdAndRemove(id)
             .exec((err, instrument) => {
                 if (err) {

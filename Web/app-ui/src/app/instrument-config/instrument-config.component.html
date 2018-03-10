@@ -1,5 +1,10 @@
 <div>
-  <button mat-button (click)="addInstrument()" class="add-button"><div class="fas fa-plus-circle fa-2x"></div></button>
+  <!-- Need to set height/width to 36px to get icon bigger otherwise get scrollbars -->
+  <!-- item-width="36px" item-height="36px" style="font-size:36px;height:36px;width:36px;line-height:36px" -->
+  <button mat-icon-button (click)="addInstrument()" class="add-button">
+    <!-- style="font-size:36px"  -->
+    <mat-icon >add_circle_outline</mat-icon>
+  </button>
 </div>
 <div>
   <mat-table #table [dataSource]="instruments">
@@ -24,13 +29,17 @@
     <ng-container matColumnDef="edit">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let instrument">
-          <button mat-button (click)="clickEdit(instrument)"><div  class="fas fa-edit"></div></button>
+        <button mat-icon-button (click)="clickEdit(instrument)">
+          <mat-icon>edit</mat-icon>
+        </button>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="delete">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let instrument">
-          <button mat-button (click)="clickDel(instrument)"><div  class="fas fa-trash"></div></button>
+        <button mat-icon-button (click)="clickDel(instrument)">
+          <mat-icon>delete</mat-icon>
+        </button>
       </mat-cell>
     </ng-container>
 

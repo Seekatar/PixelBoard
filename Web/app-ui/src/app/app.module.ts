@@ -16,6 +16,7 @@ import { InstrumentConfigComponent } from './instrument-config/instrument-config
 import { SceneConfigComponent } from './scene-config/scene-config.component';
 import { EditInstrumentComponent } from './edit-instrument/edit-instrument.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { EditSceneDialogComponent } from './edit-scene-dialog/edit-scene-dialog.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     InstrumentConfigComponent,
     SceneConfigComponent,
     EditInstrumentComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    EditSceneDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -39,6 +41,10 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
   ],
   providers: [PixelBoardService],
   bootstrap: [AppComponent],
-  entryComponents: [ EditInstrumentComponent, ConfirmDialogComponent ]
+  entryComponents: [
+    EditInstrumentComponent,
+    ConfirmDialogComponent,
+    EditSceneDialogComponent
+   ]
 })
 export class AppModule { }

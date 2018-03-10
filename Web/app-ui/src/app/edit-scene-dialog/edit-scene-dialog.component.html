@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <input matInput placeholder="Name" [(ngModel)]="data.scene.name">
+  </mat-form-field>
+  <mat-form-field>
+      <input matInput placeholder="Transistion" [(ngModel)]="data.scene.transition.name">
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="">Close</button>
+  <button mat-button [mat-dialog-close]="data.scene" cdkFocusInitial>Save</button>
+</div>

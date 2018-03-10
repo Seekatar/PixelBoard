@@ -23,6 +23,6 @@ export class Instrument {
 export class Scene {
   _id: string;
   name: string;
-  description: string;
+  transition: string;
   instruments: Instrument []
 }

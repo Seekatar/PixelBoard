@@ -74,7 +74,7 @@ const sceneSchema = new mongoose.Schema({
   },
   instruments: [
     {
-      instruments: {
+      instrument: {
         type: Schema.Types.ObjectId,
         ref: 'Instruments',
         required: true

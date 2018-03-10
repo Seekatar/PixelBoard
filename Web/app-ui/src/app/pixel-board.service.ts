@@ -47,12 +47,26 @@ export class PixelBoardService {
       .catch(this.handleError);
   }
 
+  public saveScene(scene: Scene) {
+
+    const url = `${this._baseUri}/scenes`
+
+    const body = scene;
+
+    return this.http
+      .post(url, body)
+      .toPromise()
+      .then(res => res.json() as Scene)
+      .catch(this.handleError);
+  }
+
+
   handleError(error: any): Promise<any> {
     console.error('Error from http call', error)
     return Promise.reject(error.message || error);
   }
 
-  public getInstruments(full: true): Promise<Instrument[]> {
+  public getInstruments(full: boolean = true): Promise<Instrument[]> {
     let url = `${this._baseUri}/instruments`
     if ( full )
       url += "?full=1"
