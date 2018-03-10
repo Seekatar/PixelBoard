@@ -15,7 +15,8 @@ export class ConfirmDialogComponent implements OnInit {
   public iconClass: string = "";
 
   ngOnInit() {
-    this.iconClass = "fas fa-question-circle fa-2x"; //`fas ${this.data.icon}`
+    this.data.ok = true;
+    this.iconClass = "fas fa-question-circle fa-2x";
   }
 
 }

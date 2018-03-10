@@ -46,13 +46,19 @@ export class InstrumentConfigComponent implements OnInit {
   }
 
   public clickEdit(instrument: Instrument) {
+    let copy = Object.assign( {}, instrument )
     const openDlg = this.dialog.open(EditInstrumentComponent, {
       width: "30em",
       data: {
         title: "Edit Instrument",
-        instrument: instrument
+        instrument: copy
       }
     });
+
+    openDlg.afterClosed().subscribe(result => {
+      console.log('YOOOOOOO!', result);
+    });
+
   }
 
   public clickDel(instrument: Instrument) {
@@ -63,8 +69,13 @@ export class InstrumentConfigComponent implements OnInit {
         question: `Are you sure you want to delete '${instrument.name}'`,
         okText: "Yes",
         closeText: "No",
-        icon: "fa-question-circle"
+        icon: "fa-question-circle",
+        result: instrument
       }
+    });
+
+    openDlg.afterClosed().subscribe(result => {
+      console.log('YOOOOOOO!', result);
     });
   }
 }
