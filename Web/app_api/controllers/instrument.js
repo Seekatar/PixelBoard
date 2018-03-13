@@ -34,13 +34,14 @@ const instrumentById = function (req, res) {
 
 const getInstruments = function (req, res) {
     if ( req.query.full) {
+
         instruments
             .find()
-            .populate('instrumentTypeId')
+            .populate('instrumentType')
         //     .aggregate([   {
         //         $lookup: {
-        //            from: "instrumenttypes",
-        //            localField: "instrumentTypeId",    // field in the orders collection
+        //            from: "instrumenttype",
+        //            localField: "instrumentType",    // field in the orders collection
         //            foreignField: "_id",  // field in the items collection
         //            as: "instruments"
         //         }
@@ -52,7 +53,7 @@ const getInstruments = function (req, res) {
         //      { $project: { instruments: 0 } }
         //   ])
             .exec((err, inst) => {
-                console.log("Ok!");
+                console.log("Ok for FULL!");
                 res
                     .status(200)
                     .json(inst)
@@ -73,7 +74,8 @@ const instrumentsCreate = function (req, res) {
     instruments.create({
         name: req.body.name,
         socketOffset: req.body.socketOffset ? req.body.socketOffset : 0,
-        socket: req.body.socket
+        socket: req.body.socket,
+        instrumentType: req.body.instrumentType
     }, (err, instrument) => {
         if (err) {
             res

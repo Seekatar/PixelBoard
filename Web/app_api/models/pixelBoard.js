@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 const instrumentTypeSchema = new mongoose.Schema({
-  type_name: {
+  typeName: {
     type: String,
     required: true
   },
-  type_short_name: {
+  typeShortName: {
     type: String,
     required: true
   },
@@ -18,7 +18,7 @@ const instrumentTypeSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  max_voltage: {
+  maxVoltage: {
     type: Number,
     required: false,
     'default': 5,
@@ -48,7 +48,7 @@ const instrumentSchema = new mongoose.Schema({
     min: 0,
     max: 1000,
   },
-  instrumentTypeId: {
+  instrumentType: {
     type: Schema.Types.ObjectId,
     ref: 'InstrumentTypes'
   } 

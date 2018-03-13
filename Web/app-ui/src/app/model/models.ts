@@ -5,7 +5,7 @@ export class InstrumentType {
   name: string;
   manufacturer: string;
   url: string;
-  max_voltage: number;
+  maxVoltage: number;
   instrumentCount: number;
 }
 

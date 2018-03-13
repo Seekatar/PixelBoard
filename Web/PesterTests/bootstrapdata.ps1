@@ -1,17 +1,20 @@
 $baseUri = "http://localhost:3000"
 
-if ($false)
+if ($true)
 {
-    $body = @{ name  = "NeoPixel Diffused 8mm Through-Hole LED"
+    $body = @{ typeName  = "NeoPixel Diffused 8mm Through-Hole LED"
+        typeShortName  = "8mm Diffused"
         manufacturer = "Adafruit"
         url          = "https://www.adafruit.com/product/1734"
     }
     Invoke-RestMethod -Uri $baseUri/api/instrumentTypes -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
         
-    $body = @{ name     = "NeoPixel Stick - 8 x 5050 RGB LED"
+    $body = @{ typeName     = "NeoPixel Stick - 8 x 5050 RGB LED"
+        typeShortName = "8Pixel Stick"
         manufacturer    = "Adafruit"
         url             = "https://www.adafruit.com/product/1426"
         instrumentCount = 8
+        colorScheme = "GRB"
     }
     Invoke-RestMethod -Uri $baseUri/api/instrumentTypes -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
 

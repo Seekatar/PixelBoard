@@ -42,13 +42,14 @@ const instrumentTypes = function (req, res) {
 }
 
 const instrumentTypesCreate = function (req, res) {
-    console.log("test")
+    console.log("instrumentTypesCreate")
     console.log(req.body)
     instrumentType.create({
-        name: req.body.name,
+        typeName: req.body.typeName,
+        typeShortName: req.body.typeShortName,
         manufacturer: req.body.manufacturer,
         url: req.body.url,
-        max_voltage: req.body.max_voltage,
+        maxVoltage: req.body.maxVoltage,
         instrumentCount: req.body.instrumentCount
     }, (err, instrumentType) => {
         if (err) {

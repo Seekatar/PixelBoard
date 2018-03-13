@@ -20,11 +20,11 @@
     </ng-container>
     <ng-container matColumnDef="type">
       <mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
-      <mat-cell *matCellDef="let instrument"> {{instrument.instrumentTypeId.type_short_name}} </mat-cell>
+      <mat-cell *matCellDef="let instrument"> {{instrument.instrumentType.typeShortName}} </mat-cell>
     </ng-container>
     <ng-container matColumnDef="count">
       <mat-header-cell *matHeaderCellDef> LEDs </mat-header-cell>
-      <mat-cell *matCellDef="let instrument"> {{instrument.instrumentTypeId.instrumentCount}} </mat-cell>
+      <mat-cell *matCellDef="let instrument"> {{instrument.instrumentType.instrumentCount}} </mat-cell>
     </ng-container>
     <ng-container matColumnDef="edit">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
