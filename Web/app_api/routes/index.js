@@ -6,37 +6,37 @@ const ctrlScenes = require("../controllers/scene")
 
 // instrument board
 router
-  .route('/instruments')
-  .get(ctrlInstruments.getInstruments)
-  .post(ctrlInstruments.instrumentsCreate)
-  
-router
   .route('/instruments/:id')
   .get(ctrlInstruments.instrumentById)
   .patch(ctrlInstruments.instrumentsSet)
   .delete(ctrlInstruments.instrumentsDelete)
 
-// instrumentType
 router
-  .route('/instrumentTypes')
-  .get(ctrlInstType.instrumentTypes)
-  .post(ctrlInstType.instrumentTypesCreate)
+  .route('/instruments')
+  .get(ctrlInstruments.getInstruments)
+  .post(ctrlInstruments.instrumentsCreate)
   
+// instrumentType
 router
   .route('/instrumentTypes/:id')
   .get(ctrlInstType.instrumentTypeById)
   .delete(ctrlInstType.instrumentTypesDelete)
 
-// scenes
-router
-  .route('/scenes')
-  .get(ctrlScenes.getScenes)
-  .post(ctrlScenes.addScene)
+  router
+  .route('/instrumentTypes')
+  .get(ctrlInstType.instrumentTypes)
+  .post(ctrlInstType.instrumentTypesCreate)
 
+// scenes
 router
   .route('/scenes/:id')
   .get(ctrlScenes.getScene)
   .put(ctrlScenes.setScene)
   .delete(ctrlScenes.deleteScene)
+
+router
+  .route('/scenes')
+  .get(ctrlScenes.getScenes)
+  .post(ctrlScenes.addScene)
 
 module.exports = router;

@@ -1,3 +1,35 @@
-<p>
-  scene-config works!
-</p>
+<div class="configList">
+  <mat-table #table [dataSource]="scenes">
+
+    <!-- Columns -->
+    <ng-container matColumnDef="sortOrder">
+      <mat-header-cell *matHeaderCellDef> SortOrder </mat-header-cell>
+      <mat-cell *matCellDef="let scene"> {{scene.sortOrder}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let scene"> {{scene.name}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="edit">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let scene">
+        <button mat-icon-button (click)="clickEdit(scene)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="delete">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let scene">
+        <button mat-icon-button (click)="clickDel(scene)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+  </mat-table>
+</div>

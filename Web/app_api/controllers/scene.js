@@ -39,7 +39,10 @@ const getLiveScene = function (resRet) {
     console.log(">>> after request1")
 
     req2.on('error', (e) => {
-        console.error(`problem with request: ${e.message}`);
+        console.error(`problem with getLiveScene request: ${JSON.stringify(e)}`);
+        resRet
+            .status(400)
+            .json(e)
     });
 
     console.log(">>> after request2")
@@ -49,14 +52,17 @@ const getLiveScene = function (resRet) {
 }
 
 const getScene = function (req, res) {
+    console.log(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id);
     if (!req.params || !req.params.id) {
         res
             .status(404)
             .json({ message: "id not supplied" });
     }
     else {
-        id = req.params.id
-        if (id === "0") { // 0 is the live scene
+        console.log(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id );
+        const id = req.params.id
+        console.log(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id, id === "0", id === 0 );
+        if (id === "0" || id === 0) { // 0 is the live scene
             getLiveScene(res);
         }
         else {
@@ -183,7 +189,7 @@ const setScene = function (req, res) {
     console.log(">>> after request1")
 
     req2.on('error', (e) => {
-        console.error(`problem with request: ${e.message}`);
+        console.error(`problem with setScene request: ${e.message}`);
     });
 
     console.log(">>> after request2")

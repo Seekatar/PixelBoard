@@ -10,13 +10,36 @@ export class PixelBoardService {
 
   constructor(private http: Http) { }
 
+  public deleteScene(scene: Scene) {
+    const url = `${this._baseUri}/scenes/${scene._id}`
+
+    return this.http
+      .delete(url)
+      .toPromise()
+      .then(res => {
+        console.log( `Delete returned ${JSON.stringify(res)}`);
+      })
+      .catch(this.handleError);
+  }
+
   public getScene(name: string) {
-    const url = `${this._baseUri}/scenes/0`
+    const url = `${this._baseUri}/scenes/${name}`
 
     return this.http
       .get(url)
       .toPromise()
       .then(res => res.json() as Scene)
+      .catch(this.handleError);
+
+  }
+
+  public getScenes() {
+    const url = `${this._baseUri}/scenes`
+
+    return this.http
+      .get(url)
+      .toPromise()
+      .then(res => res.json() as Scene[])
       .catch(this.handleError);
 
   }
@@ -44,6 +67,19 @@ export class PixelBoardService {
       .put(url, body)
       .toPromise()
       .then(res => res.json() as Instrument[])
+      .catch(this.handleError);
+  }
+
+  public updateScene(scene: Scene) {
+
+    const url = `${this._baseUri}/scenes/${scene._id}`
+
+    const body = scene;
+
+    return this.http
+      .put(url, body)
+      .toPromise()
+      .then(res => res.json() as Scene)
       .catch(this.handleError);
   }
 
