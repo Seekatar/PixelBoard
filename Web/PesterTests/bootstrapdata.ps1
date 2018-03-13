@@ -7,7 +7,7 @@ if ($true)
         manufacturer = "Adafruit"
         url          = "https://www.adafruit.com/product/1734"
     }
-    Invoke-RestMethod -Uri $baseUri/api/instrumentTypes -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
+    $eightMMResp = Invoke-RestMethod -Uri $baseUri/api/instrumentTypes -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json" -verbose
         
     $body = @{ typeName     = "NeoPixel Stick - 8 x 5050 RGB LED"
         typeShortName = "8Pixel Stick"
@@ -16,22 +16,23 @@ if ($true)
         instrumentCount = 8
         colorScheme = "GRB"
     }
-    Invoke-RestMethod -Uri $baseUri/api/instrumentTypes -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
+    $eightStickResp = Invoke-RestMethod -Uri $baseUri/api/instrumentTypes -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
 
 }
 
-$eightMM = "5a9ad1f6b13c8d23649f07e0"
-$eigthStick = "5a9ad1f7b13c8d23649f07e1"
+$eightMM =  $eightMMResp._id #  "5aa8496b5e9ebb0a3807a102"
+$eightStick = $eightStickResp._id #"5aa8496b5e9ebb0a3807a103"
+
 
 for($i = 0; $i -lt 9; $i++)
 {
         $body = @{ name = "Diffuse #$i"
                    socket = $i
-                   instrumentType_id = $eightMM}
+                   instrumentType = $eightMM}
         Invoke-RestMethod -Uri $baseUri/api/instruments -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
 }
 
 $body = @{ name = "Eight LED Stick"
                    socket = 9
-                   instrumentType_id = $eightStick}
+                   instrumentType = $eightStick}
         Invoke-RestMethod -Uri $baseUri/api/instruments -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
