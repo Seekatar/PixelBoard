@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+  <mat-select>
+    <mat-option *ngFor="let scene of data.scenes">{{scene.name}}</mat-option>
+  </mat-select>
+  </mat-form-field>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="">Close</button>
+  <button mat-button [mat-dialog-close]="data.scene" cdkFocusInitial>Save</button>
+</div>

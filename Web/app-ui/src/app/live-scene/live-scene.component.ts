@@ -3,6 +3,7 @@ import { PixelBoardService } from '../pixel-board.service';
 import { Instrument } from '../model/models';
 import { EditSceneDialogComponent } from '../edit-scene-dialog/edit-scene-dialog.component';
 import { MatDialog, MatSnackBar } from '@angular/material';
+import { SelectSceneDialogComponent } from '../select-scene-dialog/select-scene-dialog.component';
 
 @Component({
   selector: 'app-live-scene',
@@ -131,6 +132,25 @@ export class LiveSceneComponent implements OnInit {
 
   }
 
+  async loadScene() {
+    const scenes = await this._service.getScenes();
+    const openDlg = this.dialog.open(SelectSceneDialogComponent, {
+      width: "60em",
+      data: {
+        scenes: scenes
+      }
+    });
+
+    openDlg.afterClosed().subscribe(result => {
+      console.debug('Loaded scene', result);
+      if (result) {
+            this.snackBar.open("Loaded", "Ok");
+      }
+    });
+
+
+  }
+  
   onCheckChanged( count: Number ){
     this.anyChecked = count > 0;
   }
