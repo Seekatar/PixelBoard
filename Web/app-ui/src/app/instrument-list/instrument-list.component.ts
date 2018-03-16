@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Instrument } from '../model/models';
 
 @Component({
@@ -11,8 +11,24 @@ export class InstrumentListComponent implements OnInit {
 
   @Input()
   instruments: Instrument[];
+  @Input()
+  enabled: boolean;
+  @Output()
+  checkChanged = new EventEmitter<Number>();
+
+  private _totalChecked = 0
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  onChecked( checked: boolean ) {
+    // count since SetAll/ClearAll from above doesn't fire
+    this._totalChecked = 0;
+    this.instruments.forEach(inst => {
+      this._totalChecked += inst.checked ? 1 : 0
+    });
+    this.checkChanged.emit( this._totalChecked );
   }
 }

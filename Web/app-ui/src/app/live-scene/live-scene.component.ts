@@ -12,9 +12,12 @@ import { MatDialog, MatSnackBar } from '@angular/material';
 export class LiveSceneComponent implements OnInit {
 
   instruments: Instrument[];
+  loaded = false
   constructor(private _service: PixelBoardService, public dialog: MatDialog, public snackBar: MatSnackBar) { }
 
   selectedColor: string = "#ffffff";
+
+  anyChecked = false;
 
   ngOnInit() {
     this.getInstruments();
@@ -37,8 +40,11 @@ export class LiveSceneComponent implements OnInit {
           }
           else
             console.log("Didn't find instr for id ", inst.instrument_id)
-
+          this.loaded = true;
         });
+      }).catch((err) => {
+        this.loaded = true;
+        this.snackBar.open("Failed to get live data:\n" + err, "Ok");
       });
   }
 
@@ -64,18 +70,23 @@ export class LiveSceneComponent implements OnInit {
     this.instruments.forEach(inst => {
       inst.checked = true;
     });
+    this.anyChecked = true;
   }
 
   clearAll() {
     this.instruments.forEach(inst => {
       inst.checked = false;
     });
+    this.anyChecked = false;
   }
 
   invertAll() {
+    let checked = 0
     this.instruments.forEach(inst => {
       inst.checked = !inst.checked;
+      checked += inst.checked ? 1 : 0
     });
+    this.anyChecked = checked > 0;
   }
 
   setScene() {
@@ -108,9 +119,9 @@ export class LiveSceneComponent implements OnInit {
             console.log("saveResult is ", err);
             const jsonErr = err.json()
             let errMsg = err
-            if ( jsonErr.message)
+            if (jsonErr.message)
               errMsg = jsonErr.message;
-            else if ( jsonErr.errmsg )
+            else if (jsonErr.errmsg)
               errMsg = jsonErr.errmsg
             this.snackBar.open("Save failed:\n" + errMsg, "Ok");
           });
@@ -118,6 +129,10 @@ export class LiveSceneComponent implements OnInit {
       }
     });
 
+  }
+
+  onCheckChanged( count: Number ){
+    this.anyChecked = count > 0;
   }
 
 }

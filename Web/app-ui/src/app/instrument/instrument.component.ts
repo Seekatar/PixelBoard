@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Instrument } from '../model/models';
 import { MaterialsModule } from "../materials/materials.module"
 import { PixelBoardService } from '../pixel-board.service';
@@ -16,6 +16,12 @@ export class InstrumentComponent implements OnInit {
   @Input()
   color: string;
 
+  @Input()
+  enabled: boolean;
+
+  @Output()
+  onChecked = new EventEmitter<boolean>();
+
   constructor(private _board: PixelBoardService) { }
 
   ngOnInit() {
@@ -24,5 +30,10 @@ export class InstrumentComponent implements OnInit {
   bump() {
     console.log( "Setting color", this.color, " on ", this.instrument.name);
     this._board.setInstrument( this.instrument, this.color );
+  }
+
+  checked() {
+    this.instrument.checked = !this.instrument.checked;
+    this.onChecked.emit(this.instrument.checked);
   }
 }

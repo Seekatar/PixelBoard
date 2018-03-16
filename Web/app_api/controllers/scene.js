@@ -109,15 +109,22 @@ const getMaxSortOrder = async function () {
 
 const addScene = async function (req, res) {
 
+    let sortOrder = null
     try {
-        var sortOrder = await getMaxSortOrder()
-        _addScene(req, res, sortOrder[0].max+1)
+        const sortOrder = await getMaxSortOrder();
     } catch (err) { // need to get await error
+        console.error(err);
         console.error(`ERROR in addScene: ${JSON.stringify(err)}`);
         res
             .status(400)
             .json(err)
     }
+
+    var max = 1;
+    if ( sortOrder )
+        max = sortOrder[0].max+1
+    console.debug("Scene sort order is", max);
+    _addScene(req, res, max);
 }
 
 const _addScene = function (req, res, sortOrder) {

@@ -5,6 +5,10 @@
     <!-- style="font-size:36px"  -->
     <mat-icon >add_circle_outline</mat-icon>
   </button>
+  <button mat-icon-button (click)="refresh()" class="add-button">
+    <!-- style="font-size:36px"  -->
+    <mat-icon >refresh</mat-icon>
+  </button>
 </div>
 <div>
   <mat-table #table [dataSource]="instruments">

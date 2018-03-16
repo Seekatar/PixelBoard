@@ -2,7 +2,7 @@ use pixelBoard
 db.instruments.aggregate(
    {
       $lookup: {
-         from: "instrumentTypes",
+         from: "instrumenttypes",
          localField: "instrumentType",    // field in the orders collection
          foreignField: "_id",  // field in the items collection
          as: "instruments"
