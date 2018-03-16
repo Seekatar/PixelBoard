@@ -127,4 +127,15 @@ export class PixelBoardService {
       .catch(this.handleError);
 
   }
+
+  public getInstrumentTypes(): Promise<InstrumentType[]> {
+    const url = `${this._baseUri}/instrumentTypes`
+
+    return this.http
+      .get(url)
+      .toPromise()
+      .then(res => res.json() as InstrumentType[])
+      .catch(this.handleError);
+  }
+
 }

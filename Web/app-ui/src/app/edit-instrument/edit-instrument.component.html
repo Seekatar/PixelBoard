@@ -1,18 +1,15 @@
 <h1 mat-dialog-title>{{data.title}}</h1>
 <div mat-dialog-content>
   <mat-form-field>
-    <input matInput placeholder="Socket" [(ngModel)]="data.instrument.socket">
+    <input matInput placeholder="Socket" [(ngModel)]="data.instrument.socket" required>
   </mat-form-field>
   <mat-form-field>
-    <input matInput placeholder="Name" [(ngModel)]="data.instrument.name">
+    <input matInput placeholder="Name" [(ngModel)]="data.instrument.name" required>
   </mat-form-field>
   <mat-form-field>
-      <mat-select placeholder="Select" [(ngModel)]="data.instrument.instrumentType">
-          <mat-option value="option1">8mm Diffuse</mat-option>
-          <mat-option value="option2">8LED Stick</mat-option>
-          <mat-option value="option3">12LED Ring</mat-option>
-          <mat-option value="option4">24LED Ring</mat-option>
-        </mat-select>
+      <mat-select #instTypes placeholder="Select" [(ngModel)]="data.instrument.instrumentType" required>
+        <mat-option *ngFor="let instType of data.instrumentTypes" [value]=[instType._id]>{{instType.typeShortName}}</mat-option>
+      </mat-select>
   </mat-form-field>
 </div>
 <div mat-dialog-actions>

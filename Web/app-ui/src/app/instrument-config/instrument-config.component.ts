@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PixelBoardService } from '../pixel-board.service';
-import { Instrument } from '../model/models';
+import { Instrument, InstrumentType } from '../model/models';
 import { MatDialog } from '@angular/material';
 import { EditInstrumentComponent } from '../edit-instrument/edit-instrument.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
@@ -14,6 +14,7 @@ export class InstrumentConfigComponent implements OnInit {
 
   public instruments: Instrument[];
   public displayedColumns = ["socket", "name", "type", "count", "edit", "delete"];
+  private _inststrumentTypes: InstrumentType[] = null;
 
   constructor(private _service: PixelBoardService, public dialog: MatDialog) { }
 
@@ -26,10 +27,14 @@ export class InstrumentConfigComponent implements OnInit {
     ;
   }
 
-  public addInstrument() {
+  public async addInstrument() {
+    if ( !this._inststrumentTypes )
+      this._inststrumentTypes = await this._service.getInstrumentTypes();
+
     const openDlg = this.dialog.open(EditInstrumentComponent, {
       width: "30em",
       data: {
+        instrumentTypes: this._inststrumentTypes,
         title: "Add Instrument",
         instrument: {
           socket: 0,
@@ -40,7 +45,7 @@ export class InstrumentConfigComponent implements OnInit {
     });
 
     openDlg.afterClosed().subscribe(result => {
-      console.log('YOOOOOOO!', result);
+      console.debug('Dialog closed!', result);
     });
 
   }

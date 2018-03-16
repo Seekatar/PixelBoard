@@ -2,11 +2,13 @@ import { Input } from "@angular/core";
 
 export class InstrumentType {
   _id: string;
-  name: string;
+  typeName: string;
+  typeShortName: string;
   manufacturer: string;
   url: string;
   maxVoltage: number;
   instrumentCount: number;
+  colorScheme: string;
 }
 
 export class Instrument {
