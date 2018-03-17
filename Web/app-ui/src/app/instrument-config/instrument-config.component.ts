@@ -20,7 +20,7 @@ export class InstrumentConfigComponent implements OnInit {
 
   ngOnInit() {
     this._service
-      .getInstruments(true)
+      .getInstruments()
       .then(inst => {
         this.instruments = inst;
       });

@@ -50,7 +50,7 @@ export class PixelBoardService {
     let sockets = [];
     instruments.forEach(inst => {
       let colorNum = parseInt(`0x${inst.color.substr(1)}`)
-      if (inst.colorScheme === "GRB")
+      if (inst.instrumentType.colorScheme === "GRB")
         colorNum = (colorNum & 0xff0000) >> 8 | (colorNum & 0xff00) << 8 | (colorNum & 0xff);
 
       sockets.push({
@@ -102,16 +102,30 @@ export class PixelBoardService {
     return Promise.reject(error.message || error);
   }
 
-  public getInstruments(full: boolean = true): Promise<Instrument[]> {
-    let url = `${this._baseUri}/instruments`
-    if ( full )
-      url += "?full=1"
+  public getInstruments(): Promise<Instrument[]> {
+    let url = `${this._baseUri}/instruments?full=1`
 
     return this.http
       .get(url)
       .toPromise()
       .then(res => res.json() as Instrument[])
       .catch(this.handleError);
+  }
+
+  public expandInstruments( instruments: Instrument[] ) {
+    const expandedCount = instruments.map( i => i.instrumentType.instrumentCount).reduce( (total, count) => count+total);
+    const expanded: Instrument[] = [];
+    let address = 0;
+    instruments.forEach( instrument => {
+      expanded.push(instrument);
+      instrument.address = address++;
+      for ( let j = 1; j < instrument.instrumentType.instrumentCount; j++) {
+        const copy = Object.assign({}, instrument);
+        copy.address = address++;
+        expanded.push(copy);
+      }
+    });
+    return expanded;
   }
 
   public setInstrument(instrument: Instrument, color: string) {

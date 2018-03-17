@@ -16,11 +16,12 @@ export class Instrument {
   name: string;
   socketOffset: number;
   socket: number;
-  instrumentType_id: string;
+  address: number;
+  instrumentType: InstrumentType;
   color: string;
   checked: boolean;
-  colorScheme: string;
 }
+
 
 export class Scene {
   _id: string;

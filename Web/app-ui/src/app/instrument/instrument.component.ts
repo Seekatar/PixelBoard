@@ -24,12 +24,20 @@ export class InstrumentComponent implements OnInit {
 
   constructor(private _board: PixelBoardService) { }
 
+  showText = false;
   ngOnInit() {
   }
 
+  getSocket() {
+    if ( this.instrument.instrumentType.instrumentCount === 1)
+      return this.instrument.socket;
+    else 
+      return `${this.instrument.socket}:${this.instrument.address-this.instrument.socket}`
+  }
+
   bump() {
-    console.log( "Setting color", this.color, " on ", this.instrument.name);
-    this._board.setInstrument( this.instrument, this.color );
+    console.log("Setting color", this.color, " on ", this.instrument.name);
+    this._board.setInstrument(this.instrument, this.color);
   }
 
   checked() {

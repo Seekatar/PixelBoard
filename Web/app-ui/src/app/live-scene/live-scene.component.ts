@@ -36,7 +36,7 @@ export class LiveSceneComponent implements OnInit {
           if (found) {
             const c = inst.color.toString(16);
             found.color = "#" + "0".repeat(6 - c.length) + c
-            if (found.colorScheme === "GRB")
+            if (found.instrumentType.colorScheme === "GRB")
               found.color = "#" + found.color.substr(3, 2) + found.color.substr(1, 2) + found.color.substr(5, 2)
           }
           else
@@ -53,7 +53,7 @@ export class LiveSceneComponent implements OnInit {
     this._service
       .getInstruments()
       .then(inst => {
-        this.instruments = inst;
+        this.instruments = this._service.expandInstruments(inst);
         this.instruments.forEach(inst => { inst.color = "#000000" })
       });
     ;
