@@ -14,7 +14,7 @@ export class InstrumentConfigComponent implements OnInit {
 
   public instruments: Instrument[];
   public displayedColumns = ["socket", "name", "type", "count", "edit", "delete"];
-  private _inststrumentTypes: InstrumentType[] = null;
+  private _instrumentTypes: InstrumentType[] = null;
 
   constructor(private _service: PixelBoardService, public dialog: MatDialog) { }
 
@@ -28,42 +28,41 @@ export class InstrumentConfigComponent implements OnInit {
   }
 
   public async addInstrument() {
-    if ( !this._inststrumentTypes )
-      this._inststrumentTypes = await this._service.getInstrumentTypes();
+    if (!this._instrumentTypes)
+      this._instrumentTypes = await this._service.getInstrumentTypes();
 
     const openDlg = this.dialog.open(EditInstrumentComponent, {
       width: "30em",
       data: {
-        instrumentTypes: this._inststrumentTypes,
+        instrumentTypes: this._instrumentTypes,
         title: "Add Instrument",
         instrument: {
-          socket: 0,
+          socket: this.instruments.length,
           name: "",
-          instrumentType: "option3"
+          instrumentType: this._instrumentTypes[0]
         }
       }
     });
 
     openDlg.afterClosed().subscribe(result => {
-      console.debug('Dialog closed!', result);
+      // TODO anything? 
     });
 
   }
 
-  public clickEdit(instrument: Instrument) {
-    let copy = Object.assign( {}, instrument )
+  public async clickEdit(instrument: Instrument) {
+    let copy = Object.assign({}, instrument)
+    if (!this._instrumentTypes)
+      this._instrumentTypes = await this._service.getInstrumentTypes();
+
     const openDlg = this.dialog.open(EditInstrumentComponent, {
       width: "30em",
       data: {
         title: "Edit Instrument",
-        instrument: copy
+        instrument: copy,
+        instrumentTypes: this._instrumentTypes,
       }
     });
-
-    openDlg.afterClosed().subscribe(result => {
-      console.log('YOOOOOOO!', result);
-    });
-
   }
 
   public clickDel(instrument: Instrument) {

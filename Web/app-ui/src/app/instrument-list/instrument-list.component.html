@@ -1,4 +1,8 @@
 <p>
   Instruments
 </p>
-<div *ngFor="let inst of instruments"><app-instrument [instrument]="inst" [enabled]="enabled" (onChecked)="onChecked($event)"></app-instrument></div>
+<div>
+  <div *ngFor="let inst of getInstruments()">
+    <app-instrument [instrument]="inst" [enabled]="enabled" (onChecked)="onChecked($event)"></app-instrument>
+  </div>
+</div>

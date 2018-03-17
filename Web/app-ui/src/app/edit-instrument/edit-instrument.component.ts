@@ -13,7 +13,6 @@ export class EditInstrumentComponent implements OnInit {
   constructor(private _service: PixelBoardService, public dialog: MatDialogRef<EditInstrumentComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any ) 
   {
-    this._service.getInstrumentTypes().then( i => this.instTypes = i );
   }
 
   @Input()

@@ -135,7 +135,7 @@ export class LiveSceneComponent implements OnInit {
   async loadScene() {
     const scenes = await this._service.getScenes();
     const openDlg = this.dialog.open(SelectSceneDialogComponent, {
-      width: "60em",
+      width: "30em",
       data: {
         scenes: scenes
       }

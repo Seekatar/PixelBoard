@@ -23,6 +23,10 @@ export class InstrumentListComponent implements OnInit {
   ngOnInit() {
   }
 
+  getInstruments() {
+    return this.instruments;
+  }
+  
   onChecked( checked: boolean ) {
     // count since SetAll/ClearAll from above doesn't fire
     this._totalChecked = 0;
