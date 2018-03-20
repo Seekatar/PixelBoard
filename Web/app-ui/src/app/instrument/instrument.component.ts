@@ -29,7 +29,9 @@ export class InstrumentComponent implements OnInit {
   }
 
   getSocket() {
-    if ( this.instrument.instrumentType.instrumentCount === 1)
+    if ( !this.instrument || !this.instrument.instrumentType || !this.instrument.instrumentType.instrumentCount)
+      console.error("Null or undefined instrument!");
+    else if ( this.instrument.instrumentType.instrumentCount === 1)
       return this.instrument.socket;
     else 
       return `${this.instrument.socket}:${this.instrument.address-this.instrument.socket}`

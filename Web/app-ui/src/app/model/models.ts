@@ -22,10 +22,15 @@ export class Instrument {
   checked: boolean;
 }
 
+export class InstrumentColor {
+  index: number;
+  color: string;  
+}
 
 export class Scene {
   _id: string;
   name: string;
+  description: string;
   transition: string;
-  instruments: Instrument []
+  instruments: InstrumentColor []
 }

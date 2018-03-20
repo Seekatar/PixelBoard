@@ -74,16 +74,11 @@ const sceneSchema = new mongoose.Schema({
   },
   instruments: [
     {
-      instrument: {
-        type: Schema.Types.ObjectId,
-        ref: 'Instruments',
+      index: {
+        type: Number,
         required: true
       },
       color: {
-        type: String,
-        required: true
-      },
-      colorScheme: {
         type: String,
         required: true
       }

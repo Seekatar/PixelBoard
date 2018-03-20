@@ -105,8 +105,8 @@ export class LiveSceneComponent implements OnInit {
         title: "Add Scene",
         scene: {
           name: "",
-          transition: { name: "1sec" },
-          instruments: this.instruments
+          description: "",
+          transition: { name: "1sec" }
         }
       }
     });
@@ -114,6 +114,7 @@ export class LiveSceneComponent implements OnInit {
     openDlg.afterClosed().subscribe(result => {
       console.debug('Saved scene', result);
       if (result) {
+        result['instruments'] = this.instruments.map( (inst,index) => { return {index:index, color: inst.color } });
         this._service.saveScene(result)
           .then(ok => {
             this.snackBar.open(`Scene '${result.name}' saved`, null, {
@@ -148,7 +149,16 @@ export class LiveSceneComponent implements OnInit {
     openDlg.afterClosed().subscribe(result => {
       console.debug('Loaded scene', result);
       if (result) {
-            this.snackBar.open("Loaded", "Ok");
+        const scene = scenes.find( s => s._id === result );
+        scene.instruments.forEach( (inst,index) => {
+          if ( index < this.instruments.length )
+            this.instruments[index].color = inst.color;
+          else
+            console.warn(`Index in scene passed current instrument list ${index}`)
+        });
+        this.snackBar.open(`Loaded scene '${scene.name}'`, null, {
+          duration: 3000
+        });
       }
     });
 

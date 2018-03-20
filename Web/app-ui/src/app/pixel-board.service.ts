@@ -33,7 +33,7 @@ export class PixelBoardService {
 
   }
 
-  public getScenes() {
+  public getScenes(): Promise<Scene[]> {
     const url = `${this._baseUri}/scenes`
 
     return this.http

@@ -42,7 +42,7 @@ export class SceneConfigComponent implements OnInit {
         scene = changedScene;
         this.snackBar.open(`Scene '${scene.name}' updated`, null, {
           duration: 3000
-        })
+        });
       }
     });
 

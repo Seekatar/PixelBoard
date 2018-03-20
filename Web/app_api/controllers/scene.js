@@ -128,13 +128,12 @@ const addScene = async function (req, res) {
 }
 
 const _addScene = function (req, res, sortOrder) {
-    let instruments = []
-    req.body.instruments.forEach(o => instruments.push({ instrument: o._id, color: o.color, colorScheme: o.colorScheme ? o.colorScheme : "RGB" }))
     scenes.create({
         name: req.body.name,
+        description: req.body.description,
         sortOrder: sortOrder,
         transition: req.body.transition,
-        instruments: instruments
+        instruments: req.body.instruments
     }, (err, instrument) => {
         if (err) {
             console.log("Error", err)

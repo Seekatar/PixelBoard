@@ -13,6 +13,8 @@ export class SelectSceneDialogComponent implements OnInit {
     public data: any
   ) { }
 
+  selectedScene: String;
+
   ngOnInit() {
   }
 
