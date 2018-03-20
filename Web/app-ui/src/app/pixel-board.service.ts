@@ -54,7 +54,7 @@ export class PixelBoardService {
         colorNum = (colorNum & 0xff0000) >> 8 | (colorNum & 0xff00) << 8 | (colorNum & 0xff);
 
       sockets.push({
-        "socket": inst.socket,
+        "socket": inst.address,
         "color": colorNum
       })
     });

@@ -19,14 +19,14 @@ const getLiveScene = function (resRet) {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
             const obj = JSON.parse(chunk)
-            let scenes = []
+            let instruments = []
             if (obj.status === "OK") {
                 obj.channels.forEach(inst => {
-                    scenes.push({ instrument_id: inst.channel, color: inst.value })
+                    instruments.push({ instrument_id: inst.channel, color: inst.value })
                 });
 
             }
-            let result = { name: "LiveScene", transition: "None", scenes: scenes }
+            let result = { name: "LiveScene", transition: "None", instruments: instruments }
             resRet
                 .status(200)
                 .json(result)
@@ -154,14 +154,14 @@ const setScene = function (req, res) {
     const sockets = req.body.sockets;
     console.log(`>>> Setting scene with ${sockets.length} sockets`)
 
-    let channels = [];
+    const channels = [];
     sockets.forEach(socket => {
         channels.push({
             value: socket.color,
             circuit: socket.socket
         });
     });
-    postData = {
+    const postData = {
         channels: channels
     }
     const body = JSON.stringify(postData)

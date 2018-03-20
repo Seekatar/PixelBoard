@@ -13,6 +13,8 @@ export class InstrumentListComponent implements OnInit {
   instruments: Instrument[];
   @Input()
   enabled: boolean;
+  @Input()
+  loading: boolean;
   @Output()
   checkChanged = new EventEmitter<Number>();
 

@@ -13,26 +13,28 @@ import { SelectSceneDialogComponent } from '../select-scene-dialog/select-scene-
 export class LiveSceneComponent implements OnInit {
 
   instruments: Instrument[];
-  loaded = false
+  loaded = false;
+  loading = true;
   constructor(private _service: PixelBoardService, public dialog: MatDialog, public snackBar: MatSnackBar) { }
 
   selectedColor: string = "#ffffff";
 
   anyChecked = false;
 
-  ngOnInit() {
-    this.getInstruments();
+  async ngOnInit() {
+    await this.getInstruments();
     this.getLiveScene();
   }
 
   private getLiveScene() {
     const self = this;
+    this.loading = true;
     this._service
       .getScene("0")
       .then(scene => {
         console.log(scene);
         scene.instruments.forEach(inst => {
-          const found = self.instruments.find(me => me.socket === inst.instrument_id);
+          const found = self.instruments.find(me => me.address === inst.instrument_id);
           if (found) {
             const c = inst.color.toString(16);
             found.color = "#" + "0".repeat(6 - c.length) + c
@@ -42,15 +44,17 @@ export class LiveSceneComponent implements OnInit {
           else
             console.log("Didn't find instr for id ", inst.instrument_id)
           this.loaded = true;
+          this.loading = false;
         });
       }).catch((err) => {
-        this.loaded = true;
+        this.loading = false;
+        this.loaded = true; // TEMP to allow editing
         this.snackBar.open("Failed to get live data:\n" + err, "Ok");
       });
   }
 
-  private getInstruments() {
-    this._service
+  private async getInstruments() {
+    await this._service
       .getInstruments()
       .then(inst => {
         this.instruments = this._service.expandInstruments(inst);
