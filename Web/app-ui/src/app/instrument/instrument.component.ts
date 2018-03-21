@@ -38,8 +38,8 @@ export class InstrumentComponent implements OnInit {
   }
 
   bump() {
-    console.log("Setting color", this.color, " on ", this.instrument.name);
-    this._board.setInstrument(this.instrument, this.color);
+    console.log("Bumping shit", this.instrument.name);
+    this._board.bumpInstrument(this.instrument);
   }
 
   checked() {

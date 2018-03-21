@@ -7,8 +7,37 @@ import { Instrument, InstrumentType, Scene } from "./model/models"
 export class PixelBoardService {
 
   private _baseUri = "http://192.168.1.110:3000/api";
+  private _bumpTimeout = 500;
 
   constructor(private http: Http) { }
+
+  public bumpInstrument(instrument: Instrument) {
+    const url = `${this._baseUri}/scenes/0`
+
+    const body = {
+      transition: "0sec",
+      sockets: [{
+        socket: instrument.address,
+        color: 0xffffff
+      }
+      ]
+    };
+
+    return this.http
+      .put(url, body)
+      .toPromise()
+      .then(res => {
+        setTimeout(res => {
+          body.sockets[0].color = this.webToRgb(instrument.color, instrument.instrumentType.colorScheme);
+          this.http
+            .put(url, body)
+            .toPromise()
+            .then(res => res.json() as Instrument[])
+        }, this._bumpTimeout);
+      })
+      .catch(this.handleError);
+
+  }
 
   public deleteScene(scene: Scene) {
     const url = `${this._baseUri}/scenes/${scene._id}`
@@ -17,7 +46,7 @@ export class PixelBoardService {
       .delete(url)
       .toPromise()
       .then(res => {
-        console.log( `Delete returned ${JSON.stringify(res)}`);
+        console.log(`Delete returned ${JSON.stringify(res)}`);
       })
       .catch(this.handleError);
   }
@@ -44,14 +73,20 @@ export class PixelBoardService {
 
   }
 
+  private webToRgb(webColor: string, colorScheme: string): number {
+    let colorNum = parseInt(`0x${webColor.substr(1)}`)
+    if (colorScheme === "GRB")
+      colorNum = (colorNum & 0xff0000) >> 8 | (colorNum & 0xff00) << 8 | (colorNum & 0xff);
+    return colorNum;
+  }
+
   public setScene(instruments: Instrument[]) {
 
     const url = `${this._baseUri}/scenes/0`
     let sockets = [];
     instruments.forEach(inst => {
-      let colorNum = parseInt(`0x${inst.color.substr(1)}`)
-      if (inst.instrumentType.colorScheme === "GRB")
-        colorNum = (colorNum & 0xff0000) >> 8 | (colorNum & 0xff00) << 8 | (colorNum & 0xff);
+
+      const colorNum = this.webToRgb(inst.color, inst.instrumentType.colorScheme);
 
       sockets.push({
         "socket": inst.address,
@@ -59,7 +94,7 @@ export class PixelBoardService {
       })
     });
     const body = {
-      transition: "1sec",
+      transition: "0sec",
       sockets: sockets
     };
 
@@ -112,14 +147,14 @@ export class PixelBoardService {
       .catch(this.handleError);
   }
 
-  public expandInstruments( instruments: Instrument[] ) {
-    const expandedCount = instruments.map( i => i.instrumentType.instrumentCount).reduce( (total, count) => count+total);
+  public expandInstruments(instruments: Instrument[]) {
+    const expandedCount = instruments.map(i => i.instrumentType.instrumentCount).reduce((total, count) => count + total);
     const expanded: Instrument[] = [];
     let address = 0;
-    instruments.forEach( instrument => {
+    instruments.forEach(instrument => {
       expanded.push(instrument);
       instrument.address = address++;
-      for ( let j = 1; j < instrument.instrumentType.instrumentCount; j++) {
+      for (let j = 1; j < instrument.instrumentType.instrumentCount; j++) {
         const copy = Object.assign({}, instrument);
         copy.address = address++;
         expanded.push(copy);
