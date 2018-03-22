@@ -6,9 +6,21 @@ pink-bluegrey.css
 purple-green.css
 */
 
-@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+/* @import "~@angular/material/prebuilt-themes/deeppurple-amber.css"; */
+@import "~@angular/material/prebuilt-themes/purple-green.css";
+/* @import "~@angular/material/prebuilt-themes/indigo-pink.css"; pink buttons */
 
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+/* start material style overrides */
+.docs-app-background {
+  background: #303030;
+  color: darkgray
+}
+
+.mat-fab.mat-accent{
+  background: darkslategray;
+}
+
+/* end material style overrides */
 
 body {
   font-family: Roboto, Arial, sans-serif;

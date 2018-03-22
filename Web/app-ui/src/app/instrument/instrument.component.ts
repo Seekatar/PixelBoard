@@ -33,12 +33,12 @@ export class InstrumentComponent implements OnInit {
       console.error("Null or undefined instrument!");
     else if ( this.instrument.instrumentType.instrumentCount === 1)
       return this.instrument.socket;
-    else 
+    else
       return `${this.instrument.socket}:${this.instrument.address-this.instrument.socket}`
   }
 
   bump() {
-    console.log("Bumping shit", this.instrument.name);
+    console.log("Bumping", this.instrument.name);
     this._board.bumpInstrument(this.instrument);
   }
 
