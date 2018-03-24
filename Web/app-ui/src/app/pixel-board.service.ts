@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
-import 'rxjs/add/operator/toPromise'
-import { Instrument, InstrumentType, Scene } from "./model/models"
+import 'rxjs/add/operator/toPromise';
+import { Instrument, InstrumentType, Scene } from './model/models';
 
 @Injectable()
 export class PixelBoardService {
 
-  private _baseUri = "http://192.168.1.110:3000/api";
+  private _baseUri = 'http://192.168.1.110:3000/api';
   private _bumpTimeout = 500;
 
   constructor(private http: Http) { }
 
-  public bumpInstrument(instrument: Instrument, color: string ) {
-    const url = `${this._baseUri}/scenes/0`
+  public bumpInstrument(instrument: Instrument, color: string) {
+    const url = `${this._baseUri}/scenes/0`;
 
     const body = {
-      transition: "0sec",
+      transition: '0sec',
       sockets: [{
         socket: instrument.address,
         color: this.webToRgb(color, instrument.instrumentType.colorScheme)
@@ -27,12 +27,12 @@ export class PixelBoardService {
       .put(url, body)
       .toPromise()
       .then(res => {
-        setTimeout(res => {
+        setTimeout(resIgnored => {
           body.sockets[0].color = this.webToRgb(instrument.color, instrument.instrumentType.colorScheme);
           this.http
             .put(url, body)
             .toPromise()
-            .then(res => res.json() as Instrument[])
+            .then(httpRes => httpRes.json() as Instrument[]);
         }, this._bumpTimeout);
       })
       .catch(this.handleError);
@@ -40,7 +40,7 @@ export class PixelBoardService {
   }
 
   public deleteScene(scene: Scene) {
-    const url = `${this._baseUri}/scenes/${scene._id}`
+    const url = `${this._baseUri}/scenes/${scene._id}`;
 
     return this.http
       .delete(url)
@@ -52,7 +52,7 @@ export class PixelBoardService {
   }
 
   public getScene(name: string) {
-    const url = `${this._baseUri}/scenes/${name}`
+    const url = `${this._baseUri}/scenes/${name}`;
 
     return this.http
       .get(url)
@@ -63,7 +63,7 @@ export class PixelBoardService {
   }
 
   public getScenes(): Promise<Scene[]> {
-    const url = `${this._baseUri}/scenes`
+    const url = `${this._baseUri}/scenes`;
 
     return this.http
       .get(url)
@@ -74,27 +74,29 @@ export class PixelBoardService {
   }
 
   private webToRgb(webColor: string, colorScheme: string): number {
-    let colorNum = parseInt(`0x${webColor.substr(1)}`)
-    if (colorScheme === "GRB")
+    let colorNum = parseInt(`0x${webColor.substr(1)}`, 16);
+    if (colorScheme === 'GRB') {
+      /* tslint:disable:no-bitwise */
       colorNum = (colorNum & 0xff0000) >> 8 | (colorNum & 0xff00) << 8 | (colorNum & 0xff);
+    }
     return colorNum;
   }
 
-  public setScene(instruments: Instrument[]) {
+  public setScene(instruments: Instrument[], color?: string) {
 
-    const url = `${this._baseUri}/scenes/0`
-    let sockets = [];
+    const url = `${this._baseUri}/scenes/0`;
+    const sockets = [];
     instruments.forEach(inst => {
 
-      const colorNum = this.webToRgb(inst.color, inst.instrumentType.colorScheme);
+      const colorNum = this.webToRgb(color ? color : inst.color, inst.instrumentType.colorScheme);
 
       sockets.push({
-        "socket": inst.address,
-        "color": colorNum
-      })
+        'socket': inst.address,
+        'color': colorNum
+      });
     });
     const body = {
-      transition: "0sec",
+      transition: '0sec',
       sockets: sockets
     };
 
@@ -107,7 +109,7 @@ export class PixelBoardService {
 
   public updateScene(scene: Scene) {
 
-    const url = `${this._baseUri}/scenes/${scene._id}`
+    const url = `${this._baseUri}/scenes/${scene._id}`;
 
     const body = scene;
 
@@ -120,7 +122,7 @@ export class PixelBoardService {
 
   public saveScene(scene: Scene) {
 
-    const url = `${this._baseUri}/scenes`
+    const url = `${this._baseUri}/scenes`;
 
     const body = scene;
 
@@ -133,12 +135,12 @@ export class PixelBoardService {
 
 
   handleError(error: any): Promise<any> {
-    console.error('Error from http call', error)
+    console.error('Error from http call', error);
     return Promise.reject(error.message || error);
   }
 
   public getInstruments(): Promise<Instrument[]> {
-    let url = `${this._baseUri}/instruments?full=1`
+    const url = `${this._baseUri}/instruments?full=1`;
 
     return this.http
       .get(url)
@@ -164,10 +166,10 @@ export class PixelBoardService {
   }
 
   public setInstrument(instrument: Instrument, color: string) {
-    const url = `${this._baseUri}/instruments/${instrument.socket}`
-    const colorNum = parseInt(`0x${color.substr(1)}`)
+    const url = `${this._baseUri}/instruments/${instrument.socket}`;
+    const colorNum = parseInt(`0x${color.substr(1)}`, 16);
 
-    const body = { color: colorNum }
+    const body = { color: colorNum };
 
     return this.http
       .patch(url, body)
@@ -178,7 +180,7 @@ export class PixelBoardService {
   }
 
   public getInstrumentTypes(): Promise<InstrumentType[]> {
-    const url = `${this._baseUri}/instrumentTypes`
+    const url = `${this._baseUri}/instrumentTypes`;
 
     return this.http
       .get(url)

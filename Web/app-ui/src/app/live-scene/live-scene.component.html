@@ -12,4 +12,4 @@
 <div class="colorDiv">
   Select Color <input type="color" [(ngModel)]="selectedColor" [disabled]="!loaded"/>
 </div>
-<app-instrument-list [instruments]="instruments" [enabled]="loaded" [loading]="loading" (checkChanged)="onCheckChanged($event)"></app-instrument-list>
+<app-instrument-list [instruments]="instruments" [enabled]="loaded" [loading]="loading" (checkChanged)="onCheckChanged($event)" (instrumentColorChanged)="onInstrumentColorChanged($event)"></app-instrument-list>

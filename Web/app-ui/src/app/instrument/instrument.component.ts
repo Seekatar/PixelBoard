@@ -3,6 +3,15 @@ import { Instrument } from '../model/models';
 import { MaterialsModule } from "../materials/materials.module"
 import { PixelBoardService } from '../pixel-board.service';
 
+export class ColorClickedEvent {
+  constructor( instrument: Instrument, color?: string ) {
+    this.Color = color;
+    this.Instrument = instrument;
+  }
+  public Color: string;
+  public Instrument: Instrument;
+}
+
 @Component({
   selector: 'app-instrument',
   templateUrl: './instrument.component.html',
@@ -32,7 +41,7 @@ export class InstrumentComponent implements OnInit {
   onChecked = new EventEmitter<boolean>();
 
   @Output()
-  onColorClicked = new EventEmitter<string>();
+  onColorClicked = new EventEmitter<ColorClickedEvent>();
 
   constructor(private _board: PixelBoardService) { }
 
@@ -60,7 +69,7 @@ export class InstrumentComponent implements OnInit {
   }
 
   setColor(color: string) {
-    this.onColorClicked.emit(color);
+    this.onColorClicked.emit(new ColorClickedEvent(this.instrument, color));
   }
 
 }

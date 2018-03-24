@@ -4,6 +4,7 @@ import { Instrument } from '../model/models';
 import { EditSceneDialogComponent } from '../edit-scene-dialog/edit-scene-dialog.component';
 import { MatDialog, MatSnackBar, MatButton } from '@angular/material';
 import { SelectSceneDialogComponent } from '../select-scene-dialog/select-scene-dialog.component';
+import { InstrumentColorChangedEvent } from '../instrument-list/instrument-list.component';
 
 @Component({
   selector: 'app-live-scene',
@@ -17,9 +18,12 @@ export class LiveSceneComponent implements OnInit {
   loading = false;
   constructor(private _service: PixelBoardService, public dialog: MatDialog, public snackBar: MatSnackBar) { }
 
-  selectedColor: string = "#ffffff";
+  selectedColor = '#ffffff';
 
   anyChecked = false;
+
+  @ViewChild('colorPicker')
+  _colorPicker;
 
   async ngOnInit() {
     await this.getInstruments();
@@ -30,19 +34,20 @@ export class LiveSceneComponent implements OnInit {
     const self = this;
     this.loading = false;
     this._service
-      .getScene("0")
+      .getScene('0')
       .then(scene => {
         console.log(scene);
         scene.instruments.forEach(inst => {
           const found = self.instruments.find(me => me.address === inst.instrument_id);
           if (found) {
             const c = inst.color.toString(16);
-            found.color = "#" + "0".repeat(6 - c.length) + c
-            if (found.instrumentType.colorScheme === "GRB")
-              found.color = "#" + found.color.substr(3, 2) + found.color.substr(1, 2) + found.color.substr(5, 2)
+            found.color = '#' + '0'.repeat(6 - c.length) + c;
+            if (found.instrumentType.colorScheme === 'GRB') {
+              found.color = '#' + found.color.substr(3, 2) + found.color.substr(1, 2) + found.color.substr(5, 2)
+            }
+          } else {
+            console.log('Didn\'t find instr for id ', inst.instrument_id);
           }
-          else
-            console.log("Didn't find instr for id ", inst.instrument_id)
           this.loaded = true;
           this.loading = false;
           this.snackBar.open(`Loaded live data`, null, {
@@ -52,7 +57,7 @@ export class LiveSceneComponent implements OnInit {
       }).catch((err) => {
         this.loading = false;
         this.loaded = true; // TEMP to allow editing
-        this.snackBar.open("Failed to get live data:\n" + err, "Ok");
+        this.snackBar.open('Failed to get live data:\n' + err, 'Ok');
       });
   }
 
@@ -61,9 +66,8 @@ export class LiveSceneComponent implements OnInit {
       .getInstruments()
       .then(inst => {
         this.instruments = this._service.expandInstruments(inst);
-        this.instruments.forEach(inst => { inst.color = "#000000" })
+        this.instruments.forEach(thisInst => { thisInst.color = '#000000'; });
       });
-    ;
   }
 
   setChecked() {
@@ -74,12 +78,7 @@ export class LiveSceneComponent implements OnInit {
       });
   }
 
-  @ViewChild("colorPicker")
-  _colorPicker;
-
   selectAll() {
-    //const cp = document.getElementById("colorPicker");
-    //(cp.firstElementChild as HTMLElement).click();
     this._colorPicker.elementRef.nativeElement.firstElementChild.click();
 
     this.instruments.forEach(inst => {
@@ -96,10 +95,10 @@ export class LiveSceneComponent implements OnInit {
   }
 
   invertAll() {
-    let checked = 0
+    let checked = 0;
     this.instruments.forEach(inst => {
       inst.checked = !inst.checked;
-      checked += inst.checked ? 1 : 0
+      checked += inst.checked ? 1 : 0;
     });
     this.anyChecked = checked > 0;
   }
@@ -110,13 +109,13 @@ export class LiveSceneComponent implements OnInit {
 
   saveScene() {
     const openDlg = this.dialog.open(EditSceneDialogComponent, {
-      width: "30em",
+      width: '30em',
       data: {
-        title: "Add Scene",
+        title: 'Add Scene',
         scene: {
-          name: "",
-          description: "",
-          transition: { name: "1sec" }
+          name: '',
+          description: '',
+          transition: { name: '1sec' }
         }
       }
     });
@@ -124,7 +123,7 @@ export class LiveSceneComponent implements OnInit {
     openDlg.afterClosed().subscribe(result => {
       console.debug('Saved scene', result);
       if (result) {
-        result['instruments'] = this.instruments.map((inst, index) => { return { index: index, color: inst.color } });
+        result['instruments'] = this.instruments.map((inst, index) => ({ index: index, color: inst.color }));
         this._service.saveScene(result)
           .then(ok => {
             this.snackBar.open(`Scene '${result.name}' saved`, null, {
@@ -132,14 +131,15 @@ export class LiveSceneComponent implements OnInit {
             });
           })
           .catch(err => {
-            console.log("saveResult is ", err);
-            const jsonErr = err.json()
-            let errMsg = err
-            if (jsonErr.message)
+            console.log('saveResult is ', err);
+            const jsonErr = err.json();
+            let errMsg = err;
+            if (jsonErr.message) {
               errMsg = jsonErr.message;
-            else if (jsonErr.errmsg)
-              errMsg = jsonErr.errmsg
-            this.snackBar.open("Save failed:\n" + errMsg, "Ok");
+            } else if (jsonErr.errmsg) {
+              errMsg = jsonErr.errmsg;
+            }
+            this.snackBar.open('Save failed:\n' + errMsg, 'Ok');
           });
 
       }
@@ -150,7 +150,7 @@ export class LiveSceneComponent implements OnInit {
   async loadScene() {
     const scenes = await this._service.getScenes();
     const openDlg = this.dialog.open(SelectSceneDialogComponent, {
-      width: "30em",
+      width: '30em',
       data: {
         scenes: scenes
       }
@@ -161,10 +161,11 @@ export class LiveSceneComponent implements OnInit {
       if (result) {
         const scene = scenes.find(s => s._id === result);
         scene.instruments.forEach((inst, index) => {
-          if (index < this.instruments.length)
+          if (index < this.instruments.length) {
             this.instruments[index].color = inst.color;
-          else
+          } else {
             console.warn(`Index in scene passed current instrument list ${index}`)
+          }
         });
         this.snackBar.open(`Loaded scene '${scene.name}'`, null, {
           duration: 3000
@@ -179,4 +180,7 @@ export class LiveSceneComponent implements OnInit {
     this.anyChecked = count > 0;
   }
 
+  onInstrumentColorChanged(event: InstrumentColorChangedEvent) {
+    this._service.setScene(event.Instruments, event.Color);
+  }
 }

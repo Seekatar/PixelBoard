@@ -1,5 +1,24 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Instrument } from '../model/models';
+import { ColorClickedEvent } from '../instrument/instrument.component';
+
+export class InstrumentColorChangedEvent {
+  constructor(event: ColorClickedEvent, instrumentList: Instrument[]) {
+    this.Instruments = [];
+    if (event.Instrument.checked) {
+      this.Instruments = instrumentList.filter(inst => inst.checked);
+    } else {
+      this.Instruments.push(event.Instrument);
+    }
+    this.Color = event.Color;
+    if (!event.Color) {
+      this.Color = event.Instrument.color;
+    }
+  }
+
+  Instruments: Instrument[];
+  Color: string;
+}
 
 @Component({
   selector: 'app-instrument-list',
@@ -17,8 +36,10 @@ export class InstrumentListComponent implements OnInit {
   loading: boolean;
   @Output()
   checkChanged = new EventEmitter<Number>();
+  @Output()
+  instrumentColorChanged = new EventEmitter<InstrumentColorChangedEvent>();
 
-  private _totalChecked = 0
+  private _totalChecked = 0;
 
   constructor() { }
 
@@ -28,13 +49,17 @@ export class InstrumentListComponent implements OnInit {
   getInstruments() {
     return this.instruments;
   }
-  
-  onChecked( checked: boolean ) {
+
+  onChecked(checked: boolean) {
     // count since SetAll/ClearAll from above doesn't fire
     this._totalChecked = 0;
     this.instruments.forEach(inst => {
-      this._totalChecked += inst.checked ? 1 : 0
+      this._totalChecked += inst.checked ? 1 : 0;
     });
-    this.checkChanged.emit( this._totalChecked );
+    this.checkChanged.emit(this._totalChecked);
+  }
+
+  onColorClicked(event: ColorClickedEvent) {
+    this.instrumentColorChanged.emit(new InstrumentColorChangedEvent(event, this.instruments));
   }
 }
