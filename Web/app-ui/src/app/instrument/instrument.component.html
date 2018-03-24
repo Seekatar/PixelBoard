@@ -4,7 +4,9 @@
     <mat-checkbox [checked]="instrument.checked" (change)="checked()" [disabled]="!enabled"></mat-checkbox>
   </div>
   <div class="instrumentLayout" matTooltip="{{instrument.name}}" matTooltipPosition="below" matTooltipShowDelay="500" matTooltipHideDelay="500">
-    <div class="color-square" [style.background-color]="enabled ? instrument.color : gray"></div>
+    <div class="top-color-square" (click)="setColor('#ffffff')"></div>
+    <div #colorSquare (click)="setColor()" class="color-square disabled-color-square" [style.background-color]="instrument.color"></div>
+    <div class="bottom-color-square" (click)="setColor('#000000')"></div>
   </div>
   <div class="instrumentLayout">
     <button mat-fab (click)="bump()" [disabled]="!enabled">Bump</button>

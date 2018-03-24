@@ -51,3 +51,8 @@ body {
 .configList {
   margin-top: 2em
 }
+
+.hidden-item {
+  visibility: hidden;
+  align-content: center;
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Instrument } from '../model/models';
 import { MaterialsModule } from "../materials/materials.module"
 import { PixelBoardService } from '../pixel-board.service';
@@ -10,17 +10,29 @@ import { PixelBoardService } from '../pixel-board.service';
 })
 export class InstrumentComponent implements OnInit {
 
+  _enabled: boolean;
+
   @Input()
   instrument: Instrument;
 
   @Input()
   color: string;
 
+  @ViewChild('colorSquare')
+  colorSquare: ElementRef;
+
   @Input()
-  enabled: boolean;
+  set enabled( enabled: boolean ) {
+    this._enabled = enabled;
+    this.colorSquare.nativeElement.classList.remove("disabled-color-square");
+  }
+  get enabled() { return this._enabled; }
 
   @Output()
   onChecked = new EventEmitter<boolean>();
+
+  @Output()
+  onColorClicked = new EventEmitter<string>();
 
   constructor(private _board: PixelBoardService) { }
 
@@ -37,13 +49,18 @@ export class InstrumentComponent implements OnInit {
       return `${this.instrument.socket}:${this.instrument.address-this.instrument.socket}`
   }
 
-  bump() {
+  bump(color: string = "#ffffff") {
     console.log("Bumping", this.instrument.name);
-    this._board.bumpInstrument(this.instrument);
+    this._board.bumpInstrument(this.instrument, color );
   }
 
   checked() {
     this.instrument.checked = !this.instrument.checked;
     this.onChecked.emit(this.instrument.checked);
   }
+
+  setColor(color: string) {
+    this.onColorClicked.emit(color);
+  }
+
 }

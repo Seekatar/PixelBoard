@@ -1,3 +1,4 @@
+<mat-color-picker class="hidden-item" #colorPicker [selectedColor]="selectedColor" (selected)="selected = $event"></mat-color-picker>
 <h3>Live Scene</h3>
 <div>
   <button mat-raised-button (click)="setChecked()" [disabled]="!anyChecked || !loaded">Set Checked</button>
@@ -9,7 +10,6 @@
   <button mat-raised-button (click)="loadScene()" [disabled]="!loaded" >Load</button>
 </div>
 <div class="colorDiv">
-  <!-- <mat-color-picker></mat-color-picker> -->
   Select Color <input type="color" [(ngModel)]="selectedColor" [disabled]="!loaded"/>
 </div>
 <app-instrument-list [instruments]="instruments" [enabled]="loaded" [loading]="loading" (checkChanged)="onCheckChanged($event)"></app-instrument-list>

@@ -11,14 +11,14 @@ export class PixelBoardService {
 
   constructor(private http: Http) { }
 
-  public bumpInstrument(instrument: Instrument) {
+  public bumpInstrument(instrument: Instrument, color: string ) {
     const url = `${this._baseUri}/scenes/0`
 
     const body = {
       transition: "0sec",
       sockets: [{
         socket: instrument.address,
-        color: 0xffffff
+        color: this.webToRgb(color, instrument.instrumentType.colorScheme)
       }
       ]
     };
