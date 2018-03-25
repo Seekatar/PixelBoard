@@ -20,6 +20,14 @@ purple-green.css
   background: darkslategray;
 }
 
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background: darkslategray;
+}
+
+.mat-raised-button {
+  border-bottom: 5px;
+}
+
 /* end material style overrides */
 
 body {

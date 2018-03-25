@@ -18,6 +18,7 @@ import { EditInstrumentComponent } from './edit-instrument/edit-instrument.compo
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { EditSceneDialogComponent } from './edit-scene-dialog/edit-scene-dialog.component';
 import { SelectSceneDialogComponent } from './select-scene-dialog/select-scene-dialog.component';
+import { ShowComponent } from './show/show.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { SelectSceneDialogComponent } from './select-scene-dialog/select-scene-d
     EditInstrumentComponent,
     ConfirmDialogComponent,
     EditSceneDialogComponent,
-    SelectSceneDialogComponent
+    SelectSceneDialogComponent,
+    ShowComponent
   ],
   imports: [
     BrowserModule,

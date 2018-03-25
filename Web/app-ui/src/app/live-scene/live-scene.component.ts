@@ -80,8 +80,12 @@ export class LiveSceneComponent implements OnInit {
       });
   }
 
+  fbo() {
+    this._service.setScene(this.instruments, '#000000');
+  }
+
   selectAll() {
-    this._colorPicker.elementRef.nativeElement.firstElementChild.click();
+    // this._colorPicker.elementRef.nativeElement.firstElementChild.click();
 
     this.instruments.forEach(inst => {
       inst.checked = true;

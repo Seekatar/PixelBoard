@@ -1,16 +1,4 @@
 <div>
-  <!-- Need to set height/width to 36px to get icon bigger otherwise get scrollbars -->
-  <!-- item-width="36px" item-height="36px" style="font-size:36px;height:36px;width:36px;line-height:36px" -->
-  <button mat-icon-button (click)="addInstrument()" class="add-button">
-    <!-- style="font-size:36px"  -->
-    <mat-icon >add_circle_outline</mat-icon>
-  </button>
-  <button mat-icon-button (click)="refresh()" class="add-button">
-    <!-- style="font-size:36px"  -->
-    <mat-icon >refresh</mat-icon>
-  </button>
-</div>
-<div>
   <mat-table #table [dataSource]="instruments">
 
     <!-- Columns -->
@@ -39,7 +27,19 @@
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="delete">
-      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-header-cell *matHeaderCellDef><div>
+          <!-- Need to set height/width to 36px to get icon bigger otherwise get scrollbars -->
+          <!-- item-width="36px" item-height="36px" style="font-size:36px;height:36px;width:36px;line-height:36px" -->
+          <button mat-icon-button (click)="addInstrument()" class="add-button">
+            <!-- style="font-size:36px"  -->
+            <mat-icon >add_circle_outline</mat-icon>
+          </button>
+          <button mat-icon-button (click)="refresh()" class="add-button">
+            <!-- style="font-size:36px"  -->
+            <mat-icon >refresh</mat-icon>
+          </button>
+        </div>
+        </mat-header-cell>
       <mat-cell *matCellDef="let instrument">
         <button mat-icon-button (click)="clickDel(instrument)">
           <mat-icon>delete</mat-icon>

@@ -13,7 +13,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 export class InstrumentConfigComponent implements OnInit {
 
   public instruments: Instrument[];
-  public displayedColumns = ["socket", "name", "type", "count", "edit", "delete"];
+  public displayedColumns = ['socket', 'name', 'type', 'count', 'edit', 'delete'];
   private _instrumentTypes: InstrumentType[] = null;
 
   constructor(private _service: PixelBoardService, public dialog: MatDialog) { }
@@ -24,41 +24,42 @@ export class InstrumentConfigComponent implements OnInit {
       .then(inst => {
         this.instruments = inst;
       });
-    ;
   }
 
   public async addInstrument() {
-    if (!this._instrumentTypes)
+    if (!this._instrumentTypes) {
       this._instrumentTypes = await this._service.getInstrumentTypes();
+    }
 
     const openDlg = this.dialog.open(EditInstrumentComponent, {
-      width: "30em",
+      width: '30em',
       data: {
         instrumentTypes: this._instrumentTypes,
-        title: "Add Instrument",
+        title: 'Add Instrument',
         instrument: {
           socket: this.instruments.length,
-          name: "",
+          name: '',
           instrumentType: this._instrumentTypes[0]
         }
       }
     });
 
     openDlg.afterClosed().subscribe(result => {
-      // TODO anything? 
+      // TODO anything?
     });
 
   }
 
   public async clickEdit(instrument: Instrument) {
-    let copy = Object.assign({}, instrument)
-    if (!this._instrumentTypes)
+    const copy = Object.assign({}, instrument);
+    if (!this._instrumentTypes) {
       this._instrumentTypes = await this._service.getInstrumentTypes();
+    }
 
     const openDlg = this.dialog.open(EditInstrumentComponent, {
-      width: "30em",
+      width: '30em',
       data: {
-        title: "Edit Instrument",
+        title: 'Edit Instrument',
         instrument: copy,
         instrumentTypes: this._instrumentTypes,
       }
@@ -67,13 +68,13 @@ export class InstrumentConfigComponent implements OnInit {
 
   public clickDel(instrument: Instrument) {
     const openDlg = this.dialog.open(ConfirmDialogComponent, {
-      width: "40em",
+      width: '40em',
       data: {
-        title: "Delete Instrument",
+        title: 'Delete Instrument',
         question: `Are you sure you want to delete '${instrument.name}'`,
-        okText: "Yes",
-        closeText: "No",
-        icon: "fa-question-circle",
+        okText: 'Yes',
+        closeText: 'No',
+        icon: 'fa-question-circle',
         result: instrument
       }
     });

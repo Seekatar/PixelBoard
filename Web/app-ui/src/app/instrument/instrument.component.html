@@ -5,7 +5,7 @@
   </div>
   <div class="instrumentLayout" matTooltip="{{instrument.name}}" matTooltipPosition="below" matTooltipShowDelay="500" matTooltipHideDelay="500">
     <div class="top-color-square" (click)="setColor('#ffffff')"></div>
-    <div #colorSquare (click)="setColor()" class="color-square disabled-color-square" [style.background-color]="instrument.color"></div>
+    <div #colorSquare (dblclick)="dblClick()" (click)="setColor()" class="color-square disabled-color-square" [style.background-color]="instrument.color"></div>
     <div class="bottom-color-square" (click)="setColor('#000000')"></div>
   </div>
   <div class="instrumentLayout">
