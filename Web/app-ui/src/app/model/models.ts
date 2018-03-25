@@ -1,4 +1,4 @@
-import { Input } from "@angular/core";
+import { Input } from '@angular/core';
 
 export class InstrumentType {
   _id: string;
@@ -24,7 +24,7 @@ export class Instrument {
 
 export class InstrumentColor {
   index: number;
-  color: string;  
+  color: string;
 }
 
 export class Scene {
@@ -32,5 +32,5 @@ export class Scene {
   name: string;
   description: string;
   transition: string;
-  instruments: InstrumentColor []
+  instruments: InstrumentColor[];
 }

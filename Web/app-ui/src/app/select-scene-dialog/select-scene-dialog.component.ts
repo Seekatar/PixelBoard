@@ -1,6 +1,11 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
+export class SceneInfo {
+  SelectedString: string;
+  IgnoreBlack: boolean;
+}
+
 @Component({
   selector: 'app-select-scene-dialog',
   templateUrl: './select-scene-dialog.component.html',
@@ -13,7 +18,7 @@ export class SelectSceneDialogComponent implements OnInit {
     public data: any
   ) { }
 
-  selectedScene: String;
+  sceneInfo = new SceneInfo();
 
   ngOnInit() {
   }

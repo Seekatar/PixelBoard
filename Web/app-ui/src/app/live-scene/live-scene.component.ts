@@ -6,6 +6,8 @@ import { MatDialog, MatSnackBar, MatButton } from '@angular/material';
 import { SelectSceneDialogComponent } from '../select-scene-dialog/select-scene-dialog.component';
 import { InstrumentColorChangedEvent } from '../instrument-list/instrument-list.component';
 
+/* tslint:disable:no-console */
+
 @Component({
   selector: 'app-live-scene',
   templateUrl: './live-scene.component.html',
@@ -159,10 +161,15 @@ export class LiveSceneComponent implements OnInit {
     openDlg.afterClosed().subscribe(result => {
       console.debug('Loaded scene', result);
       if (result) {
-        const scene = scenes.find(s => s._id === result);
+        const scene = scenes.find(s => s._id === result.SelectedScene);
         scene.instruments.forEach((inst, index) => {
           if (index < this.instruments.length) {
-            this.instruments[index].color = inst.color;
+            if (inst.color !== '#000000' || !result.IgnoreBlack) {
+              this.instruments[index].color = inst.color;
+              this.instruments[index].checked = true;
+            } else {
+              this.instruments[index].checked = false;
+            }
           } else {
             console.warn(`Index in scene passed current instrument list ${index}`)
           }

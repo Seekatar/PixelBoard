@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Instrument } from '../model/models';
-import { MaterialsModule } from "../materials/materials.module"
+import { MaterialsModule } from '../materials/materials.module';
 import { PixelBoardService } from '../pixel-board.service';
 
 export class ColorClickedEvent {
-  constructor( instrument: Instrument, color?: string ) {
+  constructor(instrument: Instrument, color?: string) {
     this.Color = color;
     this.Instrument = instrument;
   }
@@ -31,17 +31,17 @@ export class InstrumentComponent implements OnInit {
   colorSquare: ElementRef;
 
   @Input()
-  set enabled( enabled: boolean ) {
+  set enabled(enabled: boolean) {
     this._enabled = enabled;
-    this.colorSquare.nativeElement.classList.remove("disabled-color-square");
+    this.colorSquare.nativeElement.classList.remove('disabled-color-square');
   }
   get enabled() { return this._enabled; }
 
   @Output()
-  onChecked = new EventEmitter<boolean>();
+  checked = new EventEmitter<boolean>();
 
   @Output()
-  onColorClicked = new EventEmitter<ColorClickedEvent>();
+  colorClicked = new EventEmitter<ColorClickedEvent>();
 
   constructor(private _board: PixelBoardService) { }
 
@@ -50,26 +50,27 @@ export class InstrumentComponent implements OnInit {
   }
 
   getSocket() {
-    if ( !this.instrument || !this.instrument.instrumentType || !this.instrument.instrumentType.instrumentCount)
-      console.error("Null or undefined instrument!");
-    else if ( this.instrument.instrumentType.instrumentCount === 1)
-      return this.instrument.socket;
-    else
-      return `${this.instrument.socket}:${this.instrument.address-this.instrument.socket}`
+    if (!this.instrument || !this.instrument.instrumentType || !this.instrument.instrumentType.instrumentCount) {
+      console.error('Null or undefined instrument!');
+    } else if (this.instrument.instrumentType.instrumentCount === 1) {
+      return this.instrument.socket + 1;
+    } else {
+      return `${this.instrument.socket + 1}:${1 + this.instrument.address - this.instrument.socket}`;
+    }
   }
 
-  bump(color: string = "#ffffff") {
-    console.log("Bumping", this.instrument.name);
-    this._board.bumpInstrument(this.instrument, color );
+  bump(color: string = '#ffffff') {
+    console.log('Bumping', this.instrument.name);
+    this._board.bumpInstrument(this.instrument, color);
   }
 
-  checked() {
+  onChecked() {
     this.instrument.checked = !this.instrument.checked;
-    this.onChecked.emit(this.instrument.checked);
+    this.checked.emit(this.instrument.checked);
   }
 
   setColor(color: string) {
-    this.onColorClicked.emit(new ColorClickedEvent(this.instrument, color));
+    this.colorClicked.emit(new ColorClickedEvent(this.instrument, color));
   }
 
 }

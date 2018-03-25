@@ -50,7 +50,7 @@ export class InstrumentListComponent implements OnInit {
     return this.instruments;
   }
 
-  onChecked(checked: boolean) {
+  checked(checked: boolean) {
     // count since SetAll/ClearAll from above doesn't fire
     this._totalChecked = 0;
     this.instruments.forEach(inst => {
