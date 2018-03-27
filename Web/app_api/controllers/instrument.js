@@ -1,3 +1,4 @@
+// @ts-check
 const http = require('http')
 const mongoose = require('mongoose');
 const instruments = mongoose.model('Instruments');
