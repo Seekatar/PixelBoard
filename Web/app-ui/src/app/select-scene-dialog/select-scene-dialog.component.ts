@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 export class SceneInfo {
   SelectedString: string;
-  IgnoreBlack: boolean;
+  IgnoreBlack: true;
 }
 
 @Component({
@@ -16,7 +16,9 @@ export class SelectSceneDialogComponent implements OnInit {
   constructor(public dialog: MatDialogRef<SelectSceneDialogComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: any
-  ) { }
+  ) {
+    this.sceneInfo.IgnoreBlack = true;
+  }
 
   sceneInfo = new SceneInfo();
 

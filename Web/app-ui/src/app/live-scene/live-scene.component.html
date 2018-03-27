@@ -1,15 +1,19 @@
-<mat-color-picker class="hidden-item" #colorPicker [selectedColor]="selectedColor" (selected)="selected = $event"></mat-color-picker>
-<div>
-  <button mat-raised-button (click)="setChecked()" [disabled]="!anyChecked || !loaded">Set Checked</button>
+<mat-color-picker class="hidden-item" #colorPicker [selectedColor]="selectedColor" (selected)="colorSelected($event)"></mat-color-picker>
+<div class="button-div">
+  <div class="button-group">
+  <button mat-raised-button (click)="fbo()" [disabled]="!loaded">FBO</button>
+  <button mat-raised-button (click)="pickColor()" [disabled]="!anyChecked || !loaded">Set Color</button>
+  <button mat-raised-button (click)="setScene()" [disabled]="!anyChecked || !loaded">Set scene!</button>
+</div>
+<div class="button-group">
+  <button mat-raised-button (click)="saveScene()" [disabled]="!loaded">Save</button>
+  <button mat-raised-button (click)="loadScene()" [disabled]="!loaded">Load</button>
+</div>
+<div class="button-group">
   <button mat-raised-button (click)="selectAll()" [disabled]="!loaded">Select All</button>
   <button mat-raised-button (click)="clearAll()" [disabled]="!loaded">Clear All</button>
-  <button mat-raised-button (click)="invertAll()" [disabled]="!loaded" >Invert Selection</button>
-  <button mat-raised-button (click)="setScene()" [disabled]="!anyChecked || !loaded">Set scene!</button>
-  <button mat-raised-button (click)="saveScene()" [disabled]="!loaded" >Save</button>
-  <button mat-raised-button (click)="loadScene()" [disabled]="!loaded" >Load</button>
-  <button mat-raised-button (click)="fbo()" [disabled]="!loaded" >FBO</button>
+  <button mat-raised-button (click)="invertAll()" [disabled]="!loaded">Invert</button>
+  </div>
 </div>
-<div class="colorDiv">
-  Select Color <input type="color" [(ngModel)]="selectedColor" [disabled]="!loaded"/>
-</div>
-<app-instrument-list style="border-top:.5em" [instruments]="instruments" [enabled]="loaded" [loading]="loading" (checkChanged)="onCheckChanged($event)" (instrumentColorChanged)="onInstrumentColorChanged($event)"></app-instrument-list>
+<app-instrument-list style="border-top:.5em" [instruments]="instruments" [enabled]="loaded" [loading]="loading" (checkChanged)="onCheckChanged($event)"
+  (instrumentColorChanged)="onInstrumentColorChanged($event)"></app-instrument-list>

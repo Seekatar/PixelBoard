@@ -72,6 +72,15 @@ export class LiveSceneComponent implements OnInit {
       });
   }
 
+  colorSelected(color: string) {
+    this.selectedColor = color;
+    this.setChecked();
+  }
+
+  pickColor() {
+    this._colorPicker.elementRef.nativeElement.firstElementChild.click();
+  }
+
   setChecked() {
     this.instruments
       .filter(inst => inst.checked)
@@ -85,8 +94,6 @@ export class LiveSceneComponent implements OnInit {
   }
 
   selectAll() {
-    // this._colorPicker.elementRef.nativeElement.firstElementChild.click();
-
     this.instruments.forEach(inst => {
       inst.checked = true;
     });
@@ -171,6 +178,7 @@ export class LiveSceneComponent implements OnInit {
             if (inst.color !== '#000000' || !result.IgnoreBlack) {
               this.instruments[index].color = inst.color;
               this.instruments[index].checked = true;
+              this.anyChecked = true;
             } else {
               this.instruments[index].checked = false;
             }
