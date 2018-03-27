@@ -50,11 +50,6 @@ export class InstrumentComponent implements OnInit {
   ngOnInit() {
   }
 
-  dblClick() {
-    this.inDouble = true;
-    alert('dbl');
-  }
-
   getSocket() {
     if (!this.instrument || !this.instrument.instrumentType || !this.instrument.instrumentType.instrumentCount) {
       console.error('Null or undefined instrument!');
@@ -76,15 +71,7 @@ export class InstrumentComponent implements OnInit {
   }
 
   setColor(color: string) {
-    const self = this;
-
-    setTimeout(function () {
-      if (self.inDouble === false) {
-        self.colorClicked.emit(new ColorClickedEvent(self.instrument, color));
-      } else {
-        self.inDouble = false;
-      }
-    }, 200);
+    this.colorClicked.emit(new ColorClickedEvent(this.instrument, color));
   }
 
 }

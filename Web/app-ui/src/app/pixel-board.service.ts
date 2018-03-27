@@ -7,36 +7,42 @@ import { Instrument, InstrumentType, Scene } from './model/models';
 export class PixelBoardService {
 
   private _baseUri = 'http://192.168.1.110:3000/api';
-  private _bumpTimeout = 500;
 
   constructor(private http: Http) { }
 
-  public bumpInstrument(instrument: Instrument, color: string) {
+  public async bumpInstrument(instrument: Instrument, color1: string = '#ffffff', color2: string = '#000000', bumpTimeout: number = 800) {
     const url = `${this._baseUri}/scenes/0`;
 
     const body = {
       transition: '0sec',
       sockets: [{
         socket: instrument.address,
-        color: this.webToRgb(color, instrument.instrumentType.colorScheme)
+        color: this.webToRgb(color1, instrument.instrumentType.colorScheme)
       }
       ]
     };
 
-    return this.http
-      .put(url, body)
-      .toPromise()
-      .then(res => {
-        setTimeout(resIgnored => {
-          body.sockets[0].color = this.webToRgb(instrument.color, instrument.instrumentType.colorScheme);
-          this.http
-            .put(url, body)
-            .toPromise()
-            .then(httpRes => httpRes.json() as Instrument[]);
-        }, this._bumpTimeout);
-      })
-      .catch(this.handleError);
+    try {
 
+      await this.http
+        .put(url, body)
+        .toPromise();
+
+      await new Promise(resolve => setTimeout(resolve, bumpTimeout));
+      body.sockets[0].color = this.webToRgb(color2, instrument.instrumentType.colorScheme);
+      await this.http
+          .put(url, body)
+          .toPromise();
+
+      await new Promise(resolve => setTimeout(resolve, bumpTimeout));
+      body.sockets[0].color = this.webToRgb(instrument.color, instrument.instrumentType.colorScheme);
+      await this.http
+        .put(url, body)
+        .toPromise();
+
+    } catch (err) {
+      this.handleError(err);
+    }
   }
 
   public deleteScene(scene: Scene) {
