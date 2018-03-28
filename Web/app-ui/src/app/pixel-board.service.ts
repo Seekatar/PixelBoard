@@ -31,8 +31,8 @@ export class PixelBoardService {
       await new Promise(resolve => setTimeout(resolve, bumpTimeout));
       body.sockets[0].color = this.webToRgb(color2, instrument.instrumentType.colorScheme);
       await this.http
-          .put(url, body)
-          .toPromise();
+        .put(url, body)
+        .toPromise();
 
       await new Promise(resolve => setTimeout(resolve, bumpTimeout));
       body.sockets[0].color = this.webToRgb(instrument.color, instrument.instrumentType.colorScheme);
@@ -88,7 +88,7 @@ export class PixelBoardService {
     return colorNum;
   }
 
-  public setScene(instruments: Instrument[], color?: string) {
+  public setScene(instruments: Instrument[], color?: string, transition: string = '3sec') {
 
     const url = `${this._baseUri}/scenes/0`;
     const sockets = [];
@@ -102,7 +102,7 @@ export class PixelBoardService {
       });
     });
     const body = {
-      transition: '0sec',
+      transition: transition,
       sockets: sockets
     };
 

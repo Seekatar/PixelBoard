@@ -4,6 +4,13 @@ const mongoose = require('mongoose');
 const scenes = mongoose.model('Scenes');
 const config = require('../config')
 
+const _debug = true;
+const logDebugMsg = function (msg) {
+    if (_debug) {
+        console.log(msg);
+    }
+}
+
 const getLiveScene = function (resRet) {
     const options = {
         hostname: '192.168.1.107',
@@ -12,10 +19,10 @@ const getLiveScene = function (resRet) {
         method: 'GET',
     };
 
-    console.log(">>> before get for live request")
+    logDebugMsg(">>> before get for live request")
 
     const req2 = http.request(options, (res) => {
-        console.log(`STATUS: ${res.statusCode}`);
+        logDebugMsg(`STATUS: ${res.statusCode}`);
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
             const obj = JSON.parse(chunk)
@@ -32,11 +39,11 @@ const getLiveScene = function (resRet) {
                 .json(result)
         });
         res.on('end', () => {
-            console.log('No more data in response.');
+            logDebugMsg('No more data in response.');
         });
     });
 
-    console.log(">>> after request1")
+    logDebugMsg(">>> after request1")
 
     req2.on('error', (e) => {
         console.error(`problem with getLiveScene request: ${JSON.stringify(e)}`);
@@ -45,23 +52,22 @@ const getLiveScene = function (resRet) {
             .json(e)
     });
 
-    console.log(">>> after request2")
+    logDebugMsg(">>> after request2")
 
     req2.end();
 
 }
 
 const getScene = function (req, res) {
-    console.log(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id);
+    logDebugMsg(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id);
     if (!req.params || !req.params.id) {
         res
             .status(404)
             .json({ message: "id not supplied" });
-    }
-    else {
-        console.log(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id );
+    } else {
+        logDebugMsg(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id);
         const id = req.params.id
-        console.log(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id, id === "0", id === 0 );
+        logDebugMsg(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id, id === "0", id === 0);
         if (id === "0" || id === 0) { // 0 is the live scene
             getLiveScene(res);
         }
@@ -93,7 +99,7 @@ const getScenes = function (req, res) {
     scenes
         .find()
         .exec((err, scene) => {
-            console.log("Ok!");
+            logDebugMsg("Ok!");
             res
                 .status(200)
                 .json(scene)
@@ -121,8 +127,8 @@ const addScene = async function (req, res) {
     }
 
     var max = 1;
-    if ( sortOrder )
-        max = sortOrder[0].max+1
+    if (sortOrder)
+        max = sortOrder[0].max + 1
     console.debug("Scene sort order is", max);
     _addScene(req, res, max);
 }
@@ -136,7 +142,7 @@ const _addScene = function (req, res, sortOrder) {
         instruments: req.body.instruments
     }, (err, instrument) => {
         if (err) {
-            console.log("Error", err)
+            logDebugMsg("Error", err)
             res
                 .status(400)
                 .json(err);
@@ -151,7 +157,7 @@ const _addScene = function (req, res, sortOrder) {
 const setScene = function (req, res) {
     const id = req.params.id;
     const sockets = req.body.sockets;
-    console.log(`>>> Setting scene with ${sockets.length} sockets`)
+    logDebugMsg(`>>> Setting scene with ${sockets.length} sockets`)
 
     const channels = [];
     sockets.forEach(socket => {
@@ -161,6 +167,7 @@ const setScene = function (req, res) {
         });
     });
     const postData = {
+        transition: req.body.transition,
         channels: channels
     }
     const body = JSON.stringify(postData)
@@ -176,41 +183,41 @@ const setScene = function (req, res) {
         }
     };
 
-    console.log(">>> before request")
+    logDebugMsg(">>> before request")
 
-    console.log(postData)
+    logDebugMsg(postData)
 
     const req2 = http.request(options, (res) => {
-        console.log(`STATUS: ${res.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+        logDebugMsg(`STATUS: ${res.statusCode}`);
+        logDebugMsg(`HEADERS: ${JSON.stringify(res.headers)}`);
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
-            console.log(`BODY: ${chunk}`);
+            logDebugMsg(`BODY: ${chunk}`);
         });
         res.on('end', () => {
-            console.log('No more data in response.');
+            logDebugMsg('No more data in response.');
         });
     });
 
-    console.log(">>> after request1")
+    logDebugMsg(">>> after request1")
 
     req2.on('error', (e) => {
         console.error(`problem with setScene request: ${e.message}`);
     });
 
-    console.log(">>> after request2")
+    logDebugMsg(">>> after request2")
 
     // write data to request body
     req2.write(body);
     req2.end();
 
-    console.log("req2 end")
+    logDebugMsg("req2 end")
 
     res
         .status(200)
         .json({ "id": "yahoo" })
 
-    console.log("something else")
+    logDebugMsg("something else")
 }
 
 const deleteScene = function (req, res) {
