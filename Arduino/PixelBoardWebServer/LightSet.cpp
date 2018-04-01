@@ -9,7 +9,7 @@ bool LightSet::Initialize()
   return true;
 }
 
-const int steps = 100;
+const int steps = 0x100;
 void LightSet::ShowLights(String transition)
 {
   int ms = 3000;
@@ -24,7 +24,6 @@ void LightSet::ShowLights(String transition)
       _strip->setPixelColor(j, _target[j].Color);
     }
     _strip->show();
-
   }
   else
   {

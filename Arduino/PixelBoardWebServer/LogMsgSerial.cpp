@@ -20,7 +20,10 @@ void LogMsgSerial::logMsg(char *msg, LogLevel level)
   Serial.println(msg);
 }
 
+#ifdef ARDUINO_SAMD_FEATHER_M0
 #define USE_OLED
+#endif
+
 #ifdef USE_OLED
 #include "LogMsgWithOled.h"
 ILogMsg& ILogMsg::Instance()
