@@ -34,7 +34,8 @@ int status = WL_IDLE_STATUS;
 WiFiServer server(80);
 ILogMsg &logger = ILogMsg::Instance();
 //logger.SetLogLevel(ILogMsg::LogLevel::Debug);
-ILightSet *lightSet = new LightSet(logger);
+const int dataPin = 6;
+ILightSet *lightSet = new LightSet(logger, dataPin);
 
 #include "Model.h"
 Scene scene(30);
@@ -60,16 +61,26 @@ void setup() {
   }
 
   // attempt to connect to Wifi network:
+  /*typedef enum {
+    WL_NO_SHIELD        = 255,   // for compatibility with WiFi Shield library
+    WL_IDLE_STATUS      = 0,
+    WL_NO_SSID_AVAIL    = 1,
+    WL_SCAN_COMPLETED   = 2,
+    WL_CONNECTED        = 3,
+    WL_CONNECT_FAILED   = 4,
+    WL_CONNECTION_LOST  = 5,
+    WL_DISCONNECTED     = 6
+} wl_status_t;*/
   while (status != WL_CONNECTED) {
-    logger.LogMsg( ILogMsg::LogLevel::Info, "Attempting to connect to SSID: %s",ssid);
+    logger.LogMsg( ILogMsg::LogLevel::Info, "Attempting to connect to SSID: %s Status = %d",ssid, status);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
 
-    // wait 10 seconds for connection:
-    delay(1000);
+    // wait for connection:
+    delay(3000);
   }
   lightSet->Initialize();
-
+  
   server.begin();
   // you're connected now, so print out the status:
   printWifiStatus();
@@ -94,6 +105,7 @@ bool processPayload(const char *output)
     JsonObject& root = jsonBuffer.parseObject(output);
     if ( root.success() )
     {
+      String trans = root["transition"];
       JsonArray &channels = root["channels"];
       for ( int i = 0; i < channels.size(); i++ )
       {
@@ -103,6 +115,7 @@ bool processPayload(const char *output)
           scene[id]->Color = channel.get<uint32_t>("value");
         logger.LogMsg( ILogMsg::LogLevel::Info,  "Channel %d %x", scene[id]->Id, scene[id]->Color);
       }
+      
       for ( int i = 0; i < scene.Count(); i++ )
         lightSet->SetLight( scene[i]->Id, scene[i]->Color );
       lightSet->ShowLights();

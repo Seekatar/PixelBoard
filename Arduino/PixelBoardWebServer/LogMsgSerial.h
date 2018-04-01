@@ -6,6 +6,7 @@
 class LogMsgSerial : public ILogMsg
 {
 public:
+  LogMsgSerial() {}
   virtual bool Initialize() { return true; }
   virtual void LogMsg(ILogMsg::LogLevel level, const char *msg, ...);
   virtual void SetLogLevel(ILogMsg::LogLevel level ) { logLevel = level; }

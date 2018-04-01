@@ -20,9 +20,16 @@ void LogMsgSerial::logMsg(char *msg, LogLevel level)
   Serial.println(msg);
 }
 
+#define USE_OLED
+#ifdef USE_OLED
 #include "LogMsgWithOled.h"
 ILogMsg& ILogMsg::Instance()
 {
   return *(new LogMsgWithOled());
 }
-
+#else
+ILogMsg& ILogMsg::Instance()
+{
+  return *(new LogMsgSerial());
+}
+#endif

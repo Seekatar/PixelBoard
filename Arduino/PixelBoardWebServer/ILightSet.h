@@ -8,7 +8,7 @@ class ILightSet
 public:  
   virtual bool Initialize() = 0;
   virtual void SetLight( int lightId, uint32_t color ) = 0;
-  virtual void ShowLights() = 0;
+  virtual void ShowLights(String transition = "3sec") = 0;
 };
 
 #endif
