@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
-import { Instrument, InstrumentType, Scene } from './model/models';
+import { Instrument, InstrumentType, Scene, Show } from './model/models';
 
 @Injectable()
 export class PixelBoardService {
@@ -88,7 +88,7 @@ export class PixelBoardService {
     return colorNum;
   }
 
-  public setScene(instruments: Instrument[], color?: string, transition: string = '3sec') {
+  public setLiveScene(instruments: Instrument[], color?: string, transition: string = '3sec') {
 
     const url = `${this._baseUri}/scenes/0`;
     const sockets = [];
@@ -136,6 +136,48 @@ export class PixelBoardService {
       .post(url, body)
       .toPromise()
       .then(res => res.json() as Scene)
+      .catch(this.handleError);
+  }
+
+  public saveShow(show: Show): any {
+    if (show._id) {
+      const url = `${this._baseUri}/shows/${show._id}`;
+
+      return this.http
+        .put(url, show)
+        .toPromise()
+        .then(res => res.json() as Show)
+        .catch(this.handleError);
+    } else {
+      const url = `${this._baseUri}/shows`;
+
+      return this.http
+        .post(url, show)
+        .toPromise()
+        .then(res => res.json() as Show)
+        .catch(this.handleError);
+    }
+  }
+
+  public deleteShow(show: Show) {
+    const url = `${this._baseUri}/shows/${show._id}`;
+
+    return this.http
+      .delete(url)
+      .toPromise()
+      .then(res => {
+        console.log(`Delete returned ${JSON.stringify(res)}`);
+      })
+      .catch(this.handleError);
+  }
+
+  public getShows(): Promise<Show[]> {
+    const url = `${this._baseUri}/shows`;
+
+    return this.http
+      .get(url)
+      .toPromise()
+      .then(res => res.json() as Show[])
       .catch(this.handleError);
   }
 

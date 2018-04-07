@@ -11,8 +11,7 @@ import { PixelBoardService } from '../pixel-board.service';
 export class EditInstrumentComponent implements OnInit {
 
   constructor(private _service: PixelBoardService, public dialog: MatDialogRef<EditInstrumentComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any ) 
-  {
+              @Inject(MAT_DIALOG_DATA) public data: any ) {
   }
 
   @Input()

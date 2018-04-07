@@ -140,7 +140,7 @@ const _addScene = function (req, res, sortOrder) {
         sortOrder: sortOrder,
         transition: req.body.transition,
         instruments: req.body.instruments
-    }, (err, instrument) => {
+    }, (err, scene) => {
         if (err) {
             logDebugMsg("Error", err)
             res
@@ -149,12 +149,12 @@ const _addScene = function (req, res, sortOrder) {
         } else {
             res
                 .status(201)
-                .json(instrument);
+                .json(scene);
         }
     });
 }
 
-const setScene = function (req, res) {
+const setLiveScene = function (req, res) {
     const id = req.params.id;
     const sockets = req.body.sockets;
     logDebugMsg(`>>> Setting scene with ${sockets.length} sockets`)
@@ -202,7 +202,7 @@ const setScene = function (req, res) {
     logDebugMsg(">>> after request1")
 
     req2.on('error', (e) => {
-        console.error(`problem with setScene request: ${e.message}`);
+        console.error(`problem with setLiveScene request: ${e.message}`);
     });
 
     logDebugMsg(">>> after request2")
@@ -225,7 +225,7 @@ const deleteScene = function (req, res) {
     if (id) {
         scenes
             .findByIdAndRemove(id)
-            .exec((err, instrument) => {
+            .exec((err, scene) => {
                 if (err) {
                     res
                         .status(404)
@@ -250,6 +250,6 @@ module.exports = {
     getScenes,
     addScene,
     getScene,
-    setScene,
+    setLiveScene,
     deleteScene
 };

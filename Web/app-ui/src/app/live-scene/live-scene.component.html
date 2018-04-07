@@ -3,7 +3,7 @@
   <div class="button-group">
   <button mat-raised-button (click)="fbo()" [disabled]="!loaded">FBO</button>
   <button mat-raised-button (click)="pickColor()" [disabled]="!anyChecked || !loaded">Set Color</button>
-  <button mat-raised-button (click)="setScene()" [disabled]="!anyChecked || !loaded">Set scene!</button>
+  <button mat-raised-button (click)="setLiveScene()" [disabled]="!anyChecked || !loaded">Set scene!</button>
 </div>
 <div class="button-group">
   <button mat-raised-button (click)="saveScene()" [disabled]="!loaded">Save</button>

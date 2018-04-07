@@ -13,7 +13,7 @@ import { EditSceneDialogComponent } from '../edit-scene-dialog/edit-scene-dialog
 export class SceneConfigComponent implements OnInit {
 
   public scenes: Scene[];
-  public displayedColumns = ["sortOrder", "name", "edit", "delete"];
+  public displayedColumns = ['sortOrder', 'name', 'edit', 'delete'];
 
   constructor(private _service: PixelBoardService, public dialog: MatDialog, public snackBar: MatSnackBar) { }
 
@@ -23,22 +23,21 @@ export class SceneConfigComponent implements OnInit {
       .then(scenes => {
         this.scenes = scenes;
       });
-    ;
   }
 
   public clickEdit(scene: Scene) {
-    let copy = Object.assign( {}, scene )
+    const copy = Object.assign({}, scene);
     const openDlg = this.dialog.open(EditSceneDialogComponent, {
-      width: "30em",
+      width: '30em',
       data: {
-        title: "Edit Scene",
+        title: 'Edit Scene',
         scene: copy
       }
     });
 
     openDlg.afterClosed().subscribe(changedScene => {
-      if ( changedScene ) {
-        this._service.setScene(changedScene);
+      if (changedScene) {
+        this._service.setLiveScene(changedScene);
         scene = changedScene;
         this.snackBar.open(`Scene '${scene.name}' updated`, null, {
           duration: 3000
@@ -50,25 +49,25 @@ export class SceneConfigComponent implements OnInit {
 
   public clickDel(scene: Scene) {
     const openDlg = this.dialog.open(ConfirmDialogComponent, {
-      width: "40em",
+      width: '40em',
       data: {
-        title: "Delete Scene",
+        title: 'Delete Scene',
         question: `Are you sure you want to delete '${scene.name}'`,
-        okText: "Yes",
-        closeText: "No",
-        icon: "fa-question-circle",
+        okText: 'Yes',
+        closeText: 'No',
+        icon: 'fa-question-circle',
         scene: scene
       }
     });
 
-    openDlg.afterClosed().subscribe(scene => {
-      if ( scene ) {
-        this._service.deleteScene(scene);
-        const index = this.scenes.findIndex( s => s === scene );
-        this.scenes.splice(index,1)
-        this.snackBar.open(`Scene '${scene.name}' deleted`, null, {
+    openDlg.afterClosed().subscribe(sceneToDelete => {
+      if (sceneToDelete) {
+        this._service.deleteScene(sceneToDelete);
+        const index = this.scenes.findIndex(s => s === sceneToDelete);
+        this.scenes.splice(index, 1);
+        this.snackBar.open(`Scene '${sceneToDelete.name}' deleted`, null, {
           duration: 3000
-        })
+        });
       }
     });
   }

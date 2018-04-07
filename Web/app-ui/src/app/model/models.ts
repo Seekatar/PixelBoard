@@ -34,3 +34,10 @@ export class Scene {
   transition: string;
   instruments: InstrumentColor[];
 }
+
+export class Show {
+  _id: string;
+  name: string;
+  description: string;
+  scenes: Scene[];
+}

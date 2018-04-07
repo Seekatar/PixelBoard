@@ -45,7 +45,7 @@ export class LiveSceneComponent implements OnInit {
             const c = inst.color.toString(16);
             found.color = '#' + '0'.repeat(6 - c.length) + c;
             if (found.instrumentType.colorScheme === 'GRB') {
-              found.color = '#' + found.color.substr(3, 2) + found.color.substr(1, 2) + found.color.substr(5, 2)
+              found.color = '#' + found.color.substr(3, 2) + found.color.substr(1, 2) + found.color.substr(5, 2);
             }
           } else {
             console.log('Didn\'t find instr for id ', inst.instrument_id);
@@ -90,7 +90,7 @@ export class LiveSceneComponent implements OnInit {
   }
 
   fbo() {
-    this._service.setScene(this.instruments, '#000000');
+    this._service.setLiveScene(this.instruments, '#000000');
   }
 
   selectAll() {
@@ -116,8 +116,8 @@ export class LiveSceneComponent implements OnInit {
     this.anyChecked = checked > 0;
   }
 
-  setScene() {
-    this._service.setScene(this.instruments.filter(inst => inst.checked));
+  setLiveScene() {
+    this._service.setLiveScene(this.instruments.filter(inst => inst.checked));
   }
 
   saveScene() {
@@ -183,7 +183,7 @@ export class LiveSceneComponent implements OnInit {
               this.instruments[index].checked = false;
             }
           } else {
-            console.warn(`Index in scene passed current instrument list ${index}`)
+            console.warn(`Index in scene passed current instrument list ${index}`);
           }
         });
         this.snackBar.open(`Loaded scene '${scene.name}'`, null, {
@@ -200,6 +200,6 @@ export class LiveSceneComponent implements OnInit {
   }
 
   onInstrumentColorChanged(event: InstrumentColorChangedEvent) {
-    this._service.setScene(event.Instruments, event.Color);
+    this._service.setLiveScene(event.Instruments, event.Color);
   }
 }

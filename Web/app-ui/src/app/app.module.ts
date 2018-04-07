@@ -5,8 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { TabsComponent } from './tabs/tabs.component';
 import { MaterialsModule } from './materials/materials.module';
-import { InstrumentListComponent } from './instrument-list/instrument-list.component'
-import { PixelBoardService } from './pixel-board.service'
+import { InstrumentListComponent } from './instrument-list/instrument-list.component';
+import { PixelBoardService } from './pixel-board.service';
 import { HttpModule } from '@angular/http';
 import { InstrumentComponent } from './instrument/instrument.component';
 import { LiveSceneComponent } from './live-scene/live-scene.component';
@@ -19,6 +19,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { EditSceneDialogComponent } from './edit-scene-dialog/edit-scene-dialog.component';
 import { SelectSceneDialogComponent } from './select-scene-dialog/select-scene-dialog.component';
 import { ShowComponent } from './show/show.component';
+import { EditShowDialogComponent } from './edit-show-dialog/edit-show-dialog.component';
+import { ShowConfigComponent } from './show-config/show-config.component';
 
 @NgModule({
   declarations: [
@@ -29,10 +31,12 @@ import { ShowComponent } from './show/show.component';
     LiveSceneComponent,
     InstrumentConfigComponent,
     SceneConfigComponent,
+    ShowConfigComponent,
     EditInstrumentComponent,
     ConfirmDialogComponent,
     EditSceneDialogComponent,
     SelectSceneDialogComponent,
+    EditShowDialogComponent,
     ShowComponent
   ],
   imports: [
@@ -49,6 +53,7 @@ import { ShowComponent } from './show/show.component';
     EditInstrumentComponent,
     ConfirmDialogComponent,
     EditSceneDialogComponent,
+    EditShowDialogComponent,
     SelectSceneDialogComponent
    ]
 })
