@@ -1,8 +1,8 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA, MatSelectionList, MatSelectionListChange } from '@angular/material';
 
 export class SceneInfo {
-  SelectedString: string;
+  SelectedScene: string;
   IgnoreBlack: true;
 }
 
@@ -22,7 +22,14 @@ export class SelectSceneDialogComponent implements OnInit {
 
   sceneInfo = new SceneInfo();
 
+  @ViewChild(MatSelectionList) scenes: MatSelectionList;
+
   ngOnInit() {
+    this.scenes.selectionChange.subscribe((s: MatSelectionListChange) => {
+      this.scenes.deselectAll();
+      s.option.selected = true;
+      this.sceneInfo.SelectedScene = s.option.value;
+  });
   }
 
 }

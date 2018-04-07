@@ -173,6 +173,7 @@ export class LiveSceneComponent implements OnInit {
       console.debug('Loaded scene', result);
       if (result) {
         const scene = scenes.find(s => s._id === result.SelectedScene);
+        console.log( scene, result.SelectedScene);
         scene.instruments.forEach((inst, index) => {
           if (index < this.instruments.length) {
             if (inst.color !== '#000000' || !result.IgnoreBlack) {
@@ -191,7 +192,6 @@ export class LiveSceneComponent implements OnInit {
         });
       }
     });
-
 
   }
 

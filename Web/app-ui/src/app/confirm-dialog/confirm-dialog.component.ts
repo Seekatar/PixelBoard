@@ -12,10 +12,10 @@ export class ConfirmDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA)
     public data: any) { }
 
-  public iconClass: string = "";
+  public iconClass = '';
 
   ngOnInit() {
-    this.iconClass = "fas fa-question-circle fa-2x";
+    this.iconClass = 'fas fa-question-circle fa-2x';
   }
 
 }
