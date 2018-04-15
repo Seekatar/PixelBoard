@@ -65,7 +65,7 @@ void LogMsgWithOled::logMsg(char *msg, LogLevel level)
 {
   LogMsgSerial::logMsg(msg, level);
   
-  if (level <= LogLevel::Verbose || msg == NULL)
+  if (level <= LogLevel::Debug || msg == NULL)
     return; // can't send lots of data to 3-line screen!
 
   char *s = strtok(msg, "\r\n");

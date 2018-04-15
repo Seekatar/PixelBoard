@@ -87,14 +87,14 @@ char _buffer[BUFFER_LEN];
 const static int HEADER_LEN = 200;
 char _headerLine[HEADER_LEN + 1];
 
-bool processPayload(const char *output)
+bool processPayload(const char *_output)
 {
   // from https://arduinojson.org/assistant/
   // const size_t bufferSize = JSON_ARRAY_SIZE(ARRAY_SIZE) + JSON_OBJECT_SIZE(1) + ARRAY_SIZE*JSON_OBJECT_SIZE(2) + 700;
   const size_t bufferSize = JSON_ARRAY_SIZE(10) + JSON_OBJECT_SIZE(1) + 10 * JSON_OBJECT_SIZE(2) + 219;
   DynamicJsonBuffer jsonBuffer(bufferSize);
 
-  output = strchr(output, '{');
+  char *output = strchr(_output, '{');
   if (output != NULL)
   {
     JsonObject &root = jsonBuffer.parseObject(output);
@@ -119,26 +119,21 @@ bool processPayload(const char *output)
     }
     else
     {
-      Serial.println("Error parsing JSON");
-      Serial.println(output);
       logger.LogMsg(ILogMsg::LogLevel::Error, "Error parsing JSON");
       logger.LogMsg(ILogMsg::LogLevel::Debug, output);
     }
   }
   else
   {
-    Serial.println("Open brace missing in payload");
-    Serial.println(output);
     logger.LogMsg(ILogMsg::LogLevel::Error, "Open brace missing in payload");
-    logger.LogMsg(ILogMsg::LogLevel::Debug, output);
+    logger.LogMsg(ILogMsg::LogLevel::Debug, _output);
   }
   return false;
 }
 
 void sendResponse(WiFiClient &client, bool ok)
 {
-  Serial.print("sending response since ok is ");
-  Serial.println(ok);
+  logger.LogMsg( ILogMsg::LogLevel::Info, "Sending response since ok is %d", (int)ok);
   if (ok)
   {
     ArduinoHttpServer::StreamHttpReply httpReply(client, "application/json");
@@ -158,7 +153,7 @@ void loop()
   char c;
   if (client.connected())
   {
-    logger.LogMsg(ILogMsg::LogLevel::Debug, "new client");
+    logger.LogMsg(ILogMsg::LogLevel::Debug, "new HTTP client");
 
     // Connected to client. Allocate and initialize StreamHttpRequest object.
     ArduinoHttpServer::StreamHttpRequest<1023> httpRequest(client);
@@ -170,7 +165,7 @@ void loop()
       // POST api/pixel
       if (httpRequest.getResource()[0] == "api" && httpRequest.getResource()[1] == "pixel")
       {
-        Serial.println(httpRequest.getResource()[2]);
+        // Serial.Serial.println(httpRequest.getResource()[2]);
 
         ArduinoHttpServer::MethodEnum method(ArduinoHttpServer::MethodInvalid);
         method = httpRequest.getMethod();
@@ -214,7 +209,7 @@ void loop()
 
     // close the connection:
     client.stop();
-    logger.LogMsg(ILogMsg::LogLevel::Debug, "client disonnected");
+    logger.LogMsg(ILogMsg::LogLevel::Debug, "HTTP client disonnected");
   }
 }
 
