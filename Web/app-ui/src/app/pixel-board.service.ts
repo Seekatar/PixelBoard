@@ -6,7 +6,7 @@ import { Instrument, InstrumentType, Scene, Show } from './model/models';
 @Injectable()
 export class PixelBoardService {
 
-  private _baseUri = 'http://192.168.1.110:3000/api';
+  private _baseUri = 'http://192.168.1.104:3000/api';
 
   constructor(private http: Http) { }
 

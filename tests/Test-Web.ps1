@@ -121,7 +121,7 @@ function setFlood( $color, $transition = 1  )
 }
 
 
-send (setAll 0xff 1 )
+send (setAll 0xffffff 1 )
 Start-Sleep -Seconds 2
 send (setAll 0xff00 )
 Start-Sleep -Seconds 2
@@ -153,9 +153,13 @@ foreach ( $i in 1..20)
     send $body
 
 }
-send (setRange 10 17 0x1f001f)
+send (setOne 2 0xffffff)
 
-send (setAll 0 )
+send (setRange 1 6 0xffffff)
+send (setRange 3 4 0xff3333)
+
+send (setAll 0x0ffffff )
+send (setAll 0x0 )
 
 setFlood 0xffffff 5
 Measure-Command  { setFlood 0x0 5 }
