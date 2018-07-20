@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<form #thisForm="ngForm">
+<div mat-dialog-content>
+  <mat-form-field>
+    <input matInput placeholder="Socket" [(ngModel)]="data.instrument.socket" required name="socket">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Name" [(ngModel)]="data.instrument.name" required name="name">
+  </mat-form-field>
+  <mat-form-field>
+      <mat-select #instTypes placeholder="Select" [(value)]="data.instrument.instrumentType._id" required name="type">
+        <mat-option *ngFor="let i = index;let instType of data.instrumentTypes" value={{instType._id}}>{{instType.typeShortName}}</mat-option>
+      </mat-select>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onClickClose()">Close</button>
+  <button mat-button [mat-dialog-close]="data.instrument" [disabled]="thisForm.invalid" cdkFocusInitial>Save</button>
+</div>
+</form>

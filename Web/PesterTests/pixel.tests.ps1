@@ -3,19 +3,28 @@ param()
 
 $baseUri = "http://localhost:3000"
 
-Describe "PixelTests" {
-    It "added a pixel" {
-
-        $body = @{ name = "ThirdOne"
-                   socket = 3}
-        $pixel = Invoke-RestMethod -Uri $baseUri/api/pixels -Method Post -Body (ConvertTo-Json $body) -ContentType "application/json"
+Describe "GetItems" {
+    It "gets scenes" {
+        $pixel = Invoke-RestMethod -Uri $baseUri/api/scenes -Method Get
         $pixel | Should not be $null
+        $pixel.Count | Should begreaterthan 0
     }
 
-    It "deletes a pixel" {
-        $id = "5a975c51e2061525780160f1"
-        $pixel = Invoke-RestMethod -Uri "$baseUri/api/pixels/$id" -Method Delete 
+    It "gets instruments" {
+        $pixel = Invoke-RestMethod -Uri $baseUri/api/instruments -Method Get
         $pixel | Should not be $null
-        
-    } -Skip
+        $pixel.Count | Should begreaterthan 0
+    }
+
+    It "gets instrumenttypes" {
+        $pixel = Invoke-RestMethod -Uri $baseUri/api/instrumenttypes -Method Get
+        $pixel | Should not be $null
+        $pixel.Count | Should begreaterthan 0
+    }
+
+    It "gets shows" {
+        $pixel = Invoke-RestMethod -Uri $baseUri/api/shows -Method Get
+        $pixel | Should not be $null
+        $pixel.Count | Should begreaterthan 0
+    }
 }

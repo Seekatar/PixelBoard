@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference  = "Stop"
 
 $pixelCount = 17
-function setAll( $color )
+function setAll( $color, $transition = 1 )
 {
     $channels = @()
     foreach ( $i in 0..($pixelCount-1))
@@ -18,13 +18,15 @@ function setAll( $color )
         }
         $channels += @{circuit=$i;value=$thiscolor}
     }
+
     @{
         channels = $channels
+        transition = "${transition}secs"
     }
 
 }
 
-function setRange( $start, $end, $color )
+function setRange( $start, $end, $color, $transition = 1  )
 {
     $start -= 1
     $end -= 1
@@ -46,10 +48,11 @@ function setRange( $start, $end, $color )
     }
     @{
         channels = $channels
+        transition = "${transition}secs"
     }
 }
 
-function setOne( $i, $color )
+function setOne( $i, $color, $transition = 1  )
 {
     $i -= 1 
     $channels = @()
@@ -66,7 +69,8 @@ function setOne( $i, $color )
     $channels += @{circuit=$i;value=$thiscolor}
     @{
         channels = $channels
-    }
+        transition = "${transition}secs"    
+     }
 
 }
 
@@ -78,43 +82,52 @@ $body
 )
 
     write-Verbose (ConvertTo-Json $body)
-    (Measure-Command {
-    Invoke-RestMethod -Body (ConvertTo-Json $body -Compress)`
-                 -Uri "http://192.168.1.107" `
+    try 
+    {
+        $resp = Invoke-WebRequest -Body (ConvertTo-Json $body -Compress)`
+                 -Uri "http://192.168.1.107/api/pixel" `
                  -UseBasicParsing `
                  -Method Post `
                  -ContentType "application/json" 
-                 }).TotalSeconds
-
+        if ( $resp.StatusCode -eq 200 )
+        {
+            ConvertFrom-Json $resp.Content
+        }
+    }
+    catch 
+    {
+        Write-Error $_
+    }
 }
 
-function setCoyote($color)
+function setCoyote($color, $transition = 1 )
 {
-    send (setRange 1 2 $color)
+    send (setRange 1 2 $color $transition)
 }
-function setRR($color)
+
+function setRR($color, $transition = 1 )
 {
-    send (setRange 3 4 $color)
+    send (setRange 3 4 $color $transition)
 }
 
-function setBack( $color )
+function setBack( $color, $transition = 1  )
 {
-    send (setRange 5 8 $color)
+    send (setRange 5 8 $color $transition)
 }
 
-function setFlood( $color )
+function setFlood( $color, $transition = 1  )
 {
-    send (setRange 10 17 $color)
+    send (setRange 10 17 $color $transition)
 }
 
 
-send (setAll 0xff )
+send (setAll 0xffffff 1 )
 Start-Sleep -Seconds 2
 send (setAll 0xff00 )
 Start-Sleep -Seconds 2
-send (setAll 0xff0000 )
+measure-command { send (setAll 0xff0000 2) }
 Start-Sleep -Seconds 2
-send (setAll 0 )
+measure-command { send (setAll 0 ) }
 Start-Sleep -Seconds 2
 
 foreach ( $i in 1..20)
@@ -140,6 +153,16 @@ foreach ( $i in 1..20)
     send $body
 
 }
-send( setRange 10 17 0x1f001f )
+send (setOne 2 0xffffff)
 
-send (setAll 0 )
+send (setRange 1 6 0xffffff)
+send (setRange 3 4 0xff3333)
+
+send (setAll 0x0ffffff )
+send (setAll 0x0 )
+
+setFlood 0xffffff 5
+Measure-Command  { setFlood 0x0 5 }
+
+setCoyote 0xff0000
+setRR 0xff00 

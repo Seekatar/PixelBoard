@@ -1,15 +1,17 @@
 <div class="instrument">
-  <div class="instrumentLayout">{{instrument.socket}}</div>
+  <div class="instrumentLayout">{{getSocket()}}</div>
   <div class="instrumentLayout">
-    <mat-checkbox [checked]="instrument.checked" (change)="instrument.checked = !instrument.checked"></mat-checkbox>
+    <mat-checkbox [checked]="instrument.checked" (change)="onChecked()" [disabled]="!enabled"></mat-checkbox>
+  </div>
+  <div class="instrumentLayout" matTooltip="{{instrument.name}}" matTooltipPosition="below" matTooltipShowDelay="500" matTooltipHideDelay="500">
+    <div class="top-color-square" (click)="setColor('#ffffff')"></div>
+    <div #colorSquare (click)="setColor()" class="color-square disabled-color-square" [style.background-color]="instrument.color"></div>
+    <div class="bottom-color-square" (click)="setColor('#000000')"></div>
   </div>
   <div class="instrumentLayout">
-    <div class="color-square" [style.background-color]="instrument.color"></div>
+    <button mat-fab (click)="bump()" [disabled]="!enabled">Bump</button>
   </div>
-  <div class="instrumentLayout">
-    <button mat-fab (click)="bump()">Bump</button>
+  <div class="vert-container" *ngIf="showText">
+    <div class="instrumentLayout vertical-text">{{instrument.name}}</div>
   </div>
-  <div class="vert-container">
-  <div class="instrumentLayout vertical-text">{{instrument.name}}</div>
-</div>
 </div>

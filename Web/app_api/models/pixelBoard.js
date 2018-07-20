@@ -1,7 +1,13 @@
 const mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 const instrumentTypeSchema = new mongoose.Schema({
-  name: {
+  typeName: {
+    type: String,
+    required: true,
+    index: { unique: true }
+  },
+  typeShortName: {
     type: String,
     required: true
   },
@@ -13,7 +19,7 @@ const instrumentTypeSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  max_voltage: {
+  maxVoltage: {
     type: Number,
     required: false,
     'default': 5,
@@ -24,6 +30,10 @@ const instrumentTypeSchema = new mongoose.Schema({
     required: false,
     'default': 1,
     min: 1
+  },
+  colorScheme: {
+    type: String,
+    'default': 'RGB'
   }
 });
 
@@ -33,21 +43,16 @@ const instrumentSchema = new mongoose.Schema({
     required: true,
     index: { unique: true }
   },
-  socketOffset: {
-    type: Number,
-    'default': 0
-  },
   socket: {
     type: Number,
     required: true,
     min: 0,
     max: 1000,
   },
-  instrumentType_id: String,
-  colorScheme: {
-    type: String,
-    'default': 'RGB'
-  }
+  instrumentType: {
+    type: Schema.Types.ObjectId,
+    ref: 'InstrumentTypes'
+  } 
 });
 
 const sceneSchema = new mongoose.Schema({
@@ -56,13 +61,22 @@ const sceneSchema = new mongoose.Schema({
     required: true,
     index: { unique: true }
   },
-  transition: {
-    name: String
+  sortOrder: {
+    type: Number,
+    required: true,
+    min: 0,
+    index: true
   },
-  instrument: [
+  transition: {
+    name: {
+      type: String,
+      required: true,
+    }
+  },
+  instruments: [
     {
-      instrument_id: {
-        type: String,
+      index: {
+        type: Number,
         required: true
       },
       color: {
@@ -73,16 +87,41 @@ const sceneSchema = new mongoose.Schema({
   ]
 });
 
+const showsSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    index: { unique: true }
+  },
+  description: {
+    type: String,
+    required: false
+  },
+  sortOrder: {
+    type: Number,
+    required: true,
+    min: 0,
+    index: true
+  },
+  scenes: [ {
+    type: Schema.Types.ObjectId,
+    ref: 'Scenes'
+  } ]
+});
+
 function indexError(error) {
-    if (error) {
-      console.log("Index error");
-      console.log(error);
-    }
+  if (error) {
+    console.log("Index error");
+    console.log(error);
   }
+}
 
 const instModel = mongoose.model('Instruments', instrumentSchema);
 const instTypeModel = mongoose.model('InstrumentTypes', instrumentTypeSchema);
-const sceneModel = mongoose.model('SceneTypes', sceneSchema);
+const sceneModel = mongoose.model('Scenes', sceneSchema);
+const showModel = mongoose.model('Shows', showsSchema);
 
 instModel.on('index', indexError);
 instTypeModel.on('index', indexError);
+sceneModel.on('index', indexError);
+showModel.on('index', indexError);

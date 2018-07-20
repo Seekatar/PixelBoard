@@ -1,8 +1,6 @@
 #ifndef __LOGMSGWITHOLED_H__
 #define __LOGMSGWITHOLED_H__
 
-#define USE_OLED
-
 #include "LogMsgSerial.h"
 
 // log non-debug message to serial, others to OLED

@@ -1,4 +1,6 @@
-<p>
-  Instruments
-</p>
-<div *ngFor="let inst of instruments"><app-instrument [instrument]="inst"></app-instrument></div>
+<div *ngIf="loading" class="loading">Loading live data...<mat-spinner></mat-spinner></div>
+<div>
+  <div *ngFor="let inst of getInstruments()">
+    <app-instrument [instrument]="inst" [enabled]="enabled" (checked)="checked($event)" (colorClicked)="onColorClicked($event)"></app-instrument>
+  </div>
+</div>

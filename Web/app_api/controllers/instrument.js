@@ -1,3 +1,4 @@
+// @ts-check
 const http = require('http')
 const mongoose = require('mongoose');
 const instruments = mongoose.model('Instruments');
@@ -33,21 +34,35 @@ const instrumentById = function (req, res) {
 }
 
 const getInstruments = function (req, res) {
-    instruments
-        .find()
-        .exec((err, inst) => {
-            console.log("Ok!");
-            res
-                .status(200)
-                .json(inst)
-        });
+    if ( req.query.full) {
+
+        instruments
+            .find()
+            .populate('instrumentType')
+            .exec((err, inst) => {
+                console.log("Ok for FULL!");
+                res
+                    .status(200)
+                    .json(inst)
+            });
+    } else {
+        instruments
+            .find()
+            .exec((err, inst) => {
+                console.log("Ok!");
+                res
+                    .status(200)
+                    .json(inst)
+            });
+    }
 }
 
 const instrumentsCreate = function (req, res) {
     instruments.create({
         name: req.body.name,
         socketOffset: req.body.socketOffset ? req.body.socketOffset : 0,
-        socket: req.body.socket
+        socket: req.body.socket,
+        instrumentType: req.body.instrumentType
     }, (err, instrument) => {
         if (err) {
             res

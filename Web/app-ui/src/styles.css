@@ -6,8 +6,61 @@ pink-bluegrey.css
 purple-green.css
 */
 
-@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+/* @import "~@angular/material/prebuilt-themes/deeppurple-amber.css"; */
+@import "~@angular/material/prebuilt-themes/purple-green.css";
+/* @import "~@angular/material/prebuilt-themes/indigo-pink.css"; pink buttons */
 
+/* start material style overrides */
+.docs-app-background {
+  background: #303030;
+  color: darkgray
+}
+
+.mat-fab.mat-accent{
+  background: darkslategray;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background: darkslategray;
+}
+
+.mat-raised-button {
+  border-bottom: 5px;
+}
+
+/* end material style overrides */
+
+body {
+  font-family: Roboto, Arial, sans-serif;
+  margin: 0;
+}
+
+.basic-container {
+  padding: 5px;
+}
+
+.version-info {
+  font-size: 8pt;
+  float: right;
+}
+
+/* My stuff below */
 .colorDiv {
   margin-top: 1em;
+}
+
+.editButton {
+}
+
+.delButton {
+
+}
+
+.configList {
+  margin-top: 2em
+}
+
+.hidden-item {
+  visibility: hidden;
+  align-content: center;
 }

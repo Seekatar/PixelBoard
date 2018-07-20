@@ -1,79 +1,173 @@
+'use strict'
 const http = require('http')
 const mongoose = require('mongoose');
-const instruments = mongoose.model('Instruments');
+const scenes = mongoose.model('Scenes');
 const config = require('../config')
 
+const _debug = true;
+const logDebugMsg = function (msg) {
+    if (_debug) {
+        console.log(msg);
+    }
+}
+
+const getLiveScene = function (resRet) {
+    const options = {
+        hostname: '192.168.1.107',
+        port: 80,
+        path: '/api/pixel',
+        method: 'GET',
+    };
+
+    logDebugMsg(">>> before get for live request")
+
+    const req2 = http.request(options, (res) => {
+        logDebugMsg(`STATUS: ${res.statusCode}`);
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => {
+            const obj = JSON.parse(chunk)
+            let instruments = []
+            if (obj.status === "OK") {
+                obj.channels.forEach(inst => {
+                    instruments.push({ instrument_id: inst.channel, color: inst.value })
+                });
+
+            }
+            let result = { name: "LiveScene", transition: "None", instruments: instruments }
+            resRet
+                .status(200)
+                .json(result)
+        });
+        res.on('end', () => {
+            logDebugMsg('No more data in response.');
+        });
+    });
+
+    logDebugMsg(">>> after request1")
+
+    req2.on('error', (e) => {
+        console.error(`problem with getLiveScene request: ${JSON.stringify(e)}`);
+        resRet
+            .status(400)
+            .json(e)
+    });
+
+    logDebugMsg(">>> after request2")
+
+    req2.end();
+
+}
+
 const getScene = function (req, res) {
+    logDebugMsg(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id);
     if (!req.params || !req.params.id) {
         res
             .status(404)
             .json({ message: "id not supplied" });
-    }
-    else {
-        instruments
-            .findById(req.params.id)
-            .exec((err, inst) => {
-                if (err) {
-                    res
-                        .status(404)
-                        .json(err)
-                }
-                else if (inst) {
-                    res
-                        .status(200)
-                        .json(inst)
-                }
-                else {
-                    res
-                        .status(404)
-                        .json({ message: "id not found" });
-                }
-            });
+    } else {
+        logDebugMsg(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id);
+        const id = req.params.id
+        logDebugMsg(">>>>>>>>>>>>>>>>>>>>> in getScene", req.params.id, id === "0", id === 0);
+        if (id === "0" || id === 0) { // 0 is the live scene
+            getLiveScene(res);
+        }
+        else {
+            scenes
+                .findById(id)
+                .exec((err, inst) => {
+                    if (err) {
+                        res
+                            .status(404)
+                            .json(err)
+                    }
+                    else if (inst) {
+                        res
+                            .status(200)
+                            .json(inst)
+                    }
+                    else {
+                        res
+                            .status(404)
+                            .json({ message: "id not found" });
+                    }
+                });
+        }
     }
 }
 
 const getScenes = function (req, res) {
-    instruments
+    scenes
         .find()
-        .exec((err, inst) => {
-            console.log("Ok!");
+        .exec((err, scene) => {
+            logDebugMsg("Ok!");
             res
                 .status(200)
-                .json(inst)
+                .json(scene)
         });
 }
 
-const addScene = function (req, res) {
-    instruments.create({
+const getMaxSortOrder = async function () {
+    return await scenes
+        .aggregate()
+        .group({ _id: null, max: { $max: "$sortOrder" } })
+        .exec();
+}
+
+const addScene = async function (req, res) {
+
+    let sortOrder = null
+    try {
+        const sortOrder = await getMaxSortOrder();
+    } catch (err) { // need to get await error
+        console.error(err);
+        console.error(`ERROR in addScene: ${JSON.stringify(err)}`);
+        res
+            .status(400)
+            .json(err)
+    }
+
+    var max = 1;
+    if (sortOrder)
+        max = sortOrder[0].max + 1
+    console.debug("Scene sort order is", max);
+    _addScene(req, res, max);
+}
+
+const _addScene = function (req, res, sortOrder) {
+    scenes.create({
         name: req.body.name,
-        socketOffset: req.body.socketOffset ? req.body.socketOffset : 0,
-        socket: req.body.socket
-    }, (err, instrument) => {
+        description: req.body.description,
+        sortOrder: sortOrder,
+        transition: req.body.transition,
+        instruments: req.body.instruments
+    }, (err, scene) => {
         if (err) {
+            logDebugMsg("Error", err)
             res
                 .status(400)
                 .json(err);
         } else {
             res
                 .status(201)
-                .json(instrument);
+                .json(scene);
         }
     });
 }
 
-const setScene = function (req, res) {
+const setLiveScene = function (req, res) {
     const id = req.params.id;
     const sockets = req.body.sockets;
-    console.log(`>>> Setting scene with ${sockets.length} sockets`)
+    logDebugMsg(`>>> Setting scene with ${sockets.length} sockets`)
 
-    let channels = [];
-    sockets.forEach( socket => {
+    const channels = [];
+    sockets.forEach(socket => {
         channels.push({
             value: socket.color,
             circuit: socket.socket
         });
     });
-    postData = {
+    const postData = {
+        transition: req.body.transition,
         channels: channels
     }
     const body = JSON.stringify(postData)
@@ -81,7 +175,7 @@ const setScene = function (req, res) {
     const options = {
         hostname: '192.168.1.107',
         port: 80,
-        path: '/',
+        path: '/api/pixel',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -89,49 +183,49 @@ const setScene = function (req, res) {
         }
     };
 
-    console.log(">>> before request")
+    logDebugMsg(">>> before request")
 
-    console.log(postData)
+    logDebugMsg(postData)
 
     const req2 = http.request(options, (res) => {
-        console.log(`STATUS: ${res.statusCode}`);
-        console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+        logDebugMsg(`STATUS: ${res.statusCode}`);
+        logDebugMsg(`HEADERS: ${JSON.stringify(res.headers)}`);
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
-            console.log(`BODY: ${chunk}`);
+            logDebugMsg(`BODY: ${chunk}`);
         });
         res.on('end', () => {
-            console.log('No more data in response.');
+            logDebugMsg('No more data in response.');
         });
     });
 
-    console.log(">>> after request1")
+    logDebugMsg(">>> after request1")
 
     req2.on('error', (e) => {
-        console.error(`problem with request: ${e.message}`);
+        console.error(`problem with setLiveScene request: ${e.message}`);
     });
 
-    console.log(">>> after request2")
+    logDebugMsg(">>> after request2")
 
     // write data to request body
     req2.write(body);
     req2.end();
 
-    console.log("req2 end")
+    logDebugMsg("req2 end")
 
     res
         .status(200)
         .json({ "id": "yahoo" })
 
-    console.log("something else")
+    logDebugMsg("something else")
 }
 
 const deleteScene = function (req, res) {
     const id = req.params.id;
     if (id) {
-        instruments
+        scenes
             .findByIdAndRemove(id)
-            .exec((err, instrument) => {
+            .exec((err, scene) => {
                 if (err) {
                     res
                         .status(404)
@@ -156,6 +250,6 @@ module.exports = {
     getScenes,
     addScene,
     getScene,
-    setScene,
+    setLiveScene,
     deleteScene
 };

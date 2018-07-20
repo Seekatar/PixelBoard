@@ -1,5 +1,6 @@
 .instrument {
   float: left;
+  margin-left: 1em;
 }
 
 .instrumentLayout {
@@ -20,12 +21,47 @@
   padding-bottom: 10em;  /* to get it to padd down */
 }
 
-.color-square {
+.top-color-square {
+  cursor: pointer;
   width: 3em;
-  height: 8em;
+  height: 3em;
   background: aliceblue;
   border: 2px solid darkgray;
-  border-radius: 9px;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
   align-content: center;
   align-self: center;
+  background: white;
+}
+.disabled-color-square {
+  background: repeating-linear-gradient(
+  45deg,
+  darkgray,
+  darkgray 10px,
+  #6d6d6d 10px,
+  #6d6d6d 20px
+);
+}
+
+.color-square {
+  cursor: pointer;
+  width: 3em;
+  height: 3em;
+  border-left: 2px solid darkgray;
+  border-right: 2px solid darkgray;
+  align-content: center;
+  align-self: center;
+}
+
+.bottom-color-square {
+  cursor: pointer;
+  width: 3em;
+  height: 3em;
+  background: aliceblue;
+  border: 2px solid darkgray;
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
+  align-content: center;
+  align-self: center;
+  background: black;
 }

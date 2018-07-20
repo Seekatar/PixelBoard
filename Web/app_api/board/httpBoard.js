@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const instruments = mongoose.model('Instruments');
 const config = require('../config')
 
-board = {
+let board = {
 
     setPixel: (id, color) => {
         debug(`>>> InstrumentSet ${id} ${color}`);

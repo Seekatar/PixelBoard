@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Select a Scene</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-selection-list #scenes>
+      <mat-list-option *ngFor="let scene of data.scenes" value="{{scene._id}}">{{scene.name}}</mat-list-option>
+    </mat-selection-list>
+  </mat-form-field>
+</div>
+<div>
+</div>
+<div>
+  <mat-checkbox [checked]="sceneInfo.IgnoreBlack" (change)="sceneInfo.IgnoreBlack = !sceneInfo.IgnoreBlack">Ignore black instruments</mat-checkbox>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="">Close</button>
+  <button mat-button [mat-dialog-close]="sceneInfo" cdkFocusInitial>Load</button>
+</div>

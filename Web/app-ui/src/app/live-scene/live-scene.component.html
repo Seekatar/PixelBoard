@@ -1,14 +1,19 @@
-<h3>Live Scene</h3>
-<div>
-  <button mat-raised-button (click)="setChecked()">Set Checked</button>
-  <button mat-raised-button (click)="selectAll()">Select All</button>
-  <button mat-raised-button (click)="clearAll()">Clear All</button>
-  <button mat-raised-button (click)="invertAll()">Invert Selection</button>
-  <button mat-raised-button (click)="setScene()">Set scene!</button>
-  <button mat-raised-button (click)="saveScene()">Save</button>
+<mat-color-picker class="hidden-item" #colorPicker [selectedColor]="selectedColor" (selected)="colorSelected($event)"></mat-color-picker>
+<div class="button-div">
+  <div class="button-group">
+  <button mat-raised-button (click)="fbo()" [disabled]="!loaded">FBO</button>
+  <button mat-raised-button (click)="pickColor()" [disabled]="!anyChecked || !loaded">Set Color</button>
+  <button mat-raised-button (click)="setLiveScene()" [disabled]="!anyChecked || !loaded">Set scene!</button>
 </div>
-<div class="colorDiv">
-  <!-- <mat-color-picker></mat-color-picker> -->
-  Select Color <input type="color" [(ngModel)]="selectedColor" />
+<div class="button-group">
+  <button mat-raised-button (click)="saveScene()" [disabled]="!loaded">Save</button>
+  <button mat-raised-button (click)="loadScene()" [disabled]="!loaded">Load</button>
 </div>
-<app-instrument-list [instruments]="instruments"></app-instrument-list>
+<div class="button-group">
+  <button mat-raised-button (click)="selectAll()" [disabled]="!loaded">Select All</button>
+  <button mat-raised-button (click)="clearAll()" [disabled]="!loaded">Clear All</button>
+  <button mat-raised-button (click)="invertAll()" [disabled]="!loaded">Invert</button>
+  </div>
+</div>
+<app-instrument-list style="border-top:.5em" [instruments]="instruments" [enabled]="loaded" [loading]="loading" (checkChanged)="onCheckChanged($event)"
+  (instrumentColorChanged)="onInstrumentColorChanged($event)"></app-instrument-list>
