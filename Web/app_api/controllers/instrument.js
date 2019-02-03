@@ -91,8 +91,8 @@ const instrumentsSet = function (req, res) {
     }`
 
     const options = {
-        hostname: '192.168.1.107',
-        port: 80,
+        hostname: config.httpBoard.hostname,
+        port: config.httpBoard.port,
         path: '/',
         method: 'POST',
         headers: {

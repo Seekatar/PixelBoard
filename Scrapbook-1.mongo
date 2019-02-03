@@ -1,0 +1,2 @@
+// scrapbook used in the Cosmo db extension for VSCode to query the Mongo db
+db.instruments.find()
