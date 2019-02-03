@@ -5,7 +5,7 @@
     "pixelBoard" :{
         "module": "httpBoard",
         "httpBoard" : {
-            "hostname" : "192.168.1.107",
+            "hostname" : "192.168.1.110",
             "port": 80
         },
         "i2cBoard" : {

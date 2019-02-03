@@ -13,8 +13,8 @@ const logDebugMsg = function (msg) {
 
 const getLiveScene = function (resRet) {
     const options = {
-        hostname: '192.168.1.107',
-        port: 80,
+        hostname: config.pixelBoard.httpBoard.hostname,
+        port: config.pixelBoard.httpBoard.port,
         path: '/api/pixel',
         method: 'GET',
     };
@@ -173,8 +173,8 @@ const setLiveScene = function (req, res) {
     const body = JSON.stringify(postData)
 
     const options = {
-        hostname: '192.168.1.107',
-        port: 80,
+        hostname: config.pixelBoard.httpBoard.hostname,
+        port: config.pixelBoard.httpBoard.port,
         path: '/api/pixel',
         method: 'POST',
         headers: {

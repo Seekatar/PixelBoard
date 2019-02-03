@@ -1,4 +1,5 @@
 ﻿$ErrorActionPreference  = "Stop"
+$ip = (& (Join-Path $PSScriptRoot "GEt-BoardIpFromCOnfig.ps1"))
 
 $pixelCount = 17
 function setAll( $color, $transition = 1 )
@@ -54,7 +55,7 @@ function setRange( $start, $end, $color, $transition = 1  )
 
 function setOne( $i, $color, $transition = 1  )
 {
-    $i -= 1 
+    $i -= 1
     $channels = @()
     if ( $i -ge 9 )
     {
@@ -69,7 +70,7 @@ function setOne( $i, $color, $transition = 1  )
     $channels += @{circuit=$i;value=$thiscolor}
     @{
         channels = $channels
-        transition = "${transition}secs"    
+        transition = "${transition}secs"
      }
 
 }
@@ -82,19 +83,19 @@ $body
 )
 
     write-Verbose (ConvertTo-Json $body)
-    try 
+    try
     {
         $resp = Invoke-WebRequest -Body (ConvertTo-Json $body -Compress)`
-                 -Uri "http://192.168.1.107/api/pixel" `
+                 -Uri "http://$ip/api/pixel" `
                  -UseBasicParsing `
                  -Method Post `
-                 -ContentType "application/json" 
+                 -ContentType "application/json"
         if ( $resp.StatusCode -eq 200 )
         {
             ConvertFrom-Json $resp.Content
         }
     }
-    catch 
+    catch
     {
         Write-Error $_
     }
@@ -165,4 +166,4 @@ setFlood 0xffffff 5
 Measure-Command  { setFlood 0x0 5 }
 
 setCoyote 0xff0000
-setRR 0xff00 
+setRR 0xff00

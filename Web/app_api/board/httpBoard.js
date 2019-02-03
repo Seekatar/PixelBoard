@@ -18,8 +18,8 @@ let board = {
         }`
 
         const options = {
-            hostname: config.httpBoard.hostname,
-            port: config.httpBoard.port,
+            hostname: config.pixelBoard.httpBoard.hostname,
+            port: config.pixelBoard.httpBoard.port,
             path: '/',
             method: 'POST',
             headers: {
