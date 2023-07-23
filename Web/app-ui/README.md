@@ -7,7 +7,7 @@ Using the IP is important since the API Server allows that IP via CORS
 ```powershell
 # PowerShell to get IP
 $ip =  Get-NetIPAddress | ? { $_.AddressFamily -eq "Ipv4" -and $_.InterfaceAlias -eq 'Wi-Fi' }
-ng server -host ($ip.IpAddress)
+ng serve -host ($ip.IpAddress)
 ```
 
 If you get the message `You seem to not be depending on "@angular/core". This is an error.` Run `npm install`
